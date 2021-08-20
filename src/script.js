@@ -467,12 +467,35 @@ const afwerkingsNiveau = () => {
   meubilair["kast5_meub"].children[1].material = m2;
   meubilair["kast5_meub"].children[2].material = m3;
   //kast6
-  meubilair["kast6_meub"].children[0].material = m1;
-  meubilair["kast6_meub"].children[1].material = m2;
-  meubilair["kast6_meub"].children[2].material = m3;
-  //kast6 nr
-  meubilair["kast6_meub_nr"].children[0].material = m1;
-  meubilair["kast6_meub_nr"].children[1].material = m2;
+  //kast6 nr  
+  if (brensjParams.afwerking === "cosy") {
+    //
+    meubilair["kast6_meub"].children[0].material = bruinMeub;
+    meubilair["kast6_meub"].children[1].material = bruinMeub;
+    meubilair["kast6_meub"].children[2].material = witMeub;
+    //
+    meubilair["kast6_meub_nr"].children[0].material = bruinMeub;
+    meubilair["kast6_meub_nr"].children[1].material = bruinMeub;
+    meubilair["kast6_meub_nr"].children[2].material = witMeub;
+  } else if (brensjParams.afwerking === "premium") {
+    //
+    meubilair["kast6_meub"].children[0].material = zwartMeub;
+    meubilair["kast6_meub"].children[1].material = zwartMeub;
+    meubilair["kast6_meub"].children[2].material = witMeub;
+    //
+    meubilair["kast6_meub_nr"].children[0].material = zwartMeub;
+    meubilair["kast6_meub_nr"].children[1].material = zwartMeub;
+    meubilair["kast6_meub_nr"].children[2].material = witMeub;
+  } else if (brensjParams.afwerking === "high-end") {
+    //
+    meubilair["kast6_meub"].children[0].material = zwartMeub;
+    meubilair["kast6_meub"].children[1].material = witMeub;
+    meubilair["kast6_meub"].children[2].material = zwartMeub;
+    //
+    meubilair["kast6_meub_nr"].children[0].material = zwartMeub;
+    meubilair["kast6_meub_nr"].children[1].material = witMeub;
+    meubilair["kast6_meub_nr"].children[2].material = zwartMeub;
+  }
   // meubilair["kast6_meub_nr"].children[2].material = m3;
   //kast6_4
   meubilair["kast6_meub_4"].children[0].material = m1;
