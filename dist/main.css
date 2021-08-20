@@ -1,0 +1,279 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body
+{
+    overflow: hidden;
+}
+#mainMenuBtn
+{
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+  z-index: 10;
+  background-size: cover;
+}
+#temporary{
+  display: none;
+}
+#info
+{
+    position: absolute;
+    bottom: 1vh;
+    right: 1vw;
+    z-index: 1;
+}
+#info .cam{
+  display: block;
+  height: 50px;
+  width: 50px;
+  margin: 1vh;
+  border-style:none;
+  background-color: #04492C;
+  color: #ffffff;
+  font-family: 'Overpass, sans-serif';
+  font-size: 1em;
+  cursor: pointer;
+  transition: 0.25s background-color, 0.5s color, 0.5S border-color;
+}
+#info .cam:hover{
+    color: #04492c;
+    background-color: white;
+    border: 1px solid #04492c;
+}
+#bottomCanvasText{
+  position: absolute;
+  bottom: 1vh;
+  color: #feffd1;  
+  z-index: 1;
+  right: 10%;
+}
+.webgl
+{
+    position: fixed;
+    top: 0;
+    right: 0;
+    outline: none;
+}
+/* loading screen */
+#loading-screen {
+	position: absolute;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
+	opacity: 1;
+ 	transition: 1s opacity;
+}
+#inrichtingDiv {
+  position: absolute;
+  right: 1vw;
+  top: 1vh;
+  z-index: 1;
+}
+#loading-screen.fade-out {
+    opacity: 0;
+}
+
+.loader {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  border: 4px solid #04492C;
+  top: 50%;
+  left: 50%;
+  animation: loader 2s infinite ease;
+}
+.loader-text{
+    color: #04492C;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    font-family: fantasy;
+}
+.loader-inner {
+    vertical-align: top;
+    display: inline-block;
+    width: 100%;
+    background-color: #04492C;
+    animation: loader-inner 2s infinite ease-in;
+  }
+  /***************************custom checkbox****************************/
+/* The container */
+.container {
+  /* position: absolute; */
+  display: flex;
+  align-items: center;
+  right: 1vw;
+  top: 1vh;
+  cursor: pointer;
+  font-size: 22px;
+  color:#feffd1;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: relative;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: relative;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  margin-left: 1vw;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #04492c;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 6px;
+  height: 15px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+/*********************************************BULLETIN POINTS***************************/
+#bulletinTitle {
+  margin-top: 2vh;
+  margin-bottom: 1vh;
+}
+#bulletinList {
+  margin-left: 2vw;
+}
+/************************************************STAP 5 OVERZICHT**********************************************************/
+#overzichtContainer{
+  display: flex;
+  flex-direction: row;
+}
+.step5LeftLabel {
+  
+}
+.step5RightLabel {
+  
+}
+#step5leftSide{
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#step5RightSide{
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#step5PriceSide{
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+  /*****************************css keyframes anim***********************************************************************/
+@keyframes loader-top-shape {
+    0% {
+        transform: rotate(0deg);
+      }
+      
+      25% {
+        transform: rotate(360deg);
+      }
+      
+      50% {
+        transform: rotate(360deg);
+      }
+      
+      75% {
+        transform: rotate(360deg);
+      }
+      
+      100% {
+        transform: rotate(360deg);
+      }
+}
+@keyframes loader {
+    0% {
+      transform: rotate(0deg);
+    }
+    
+    25% {
+      transform: rotate(180deg);
+    }
+    
+    50% {
+      transform: rotate(180deg);
+    }
+    
+    75% {
+      transform: rotate(360deg);
+    }
+    
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes loader-inner {
+    0% {
+      height: 0%;
+    }
+    25% {
+      height: 0%;
+    }
+    
+    50% {
+      height: 100%;
+    }
+    
+    75% {
+      height: 100%;
+    }
+    
+    100% {
+      height: 0%;
+    }
+  }
+
+/*# sourceMappingURL=main.css.map*/
