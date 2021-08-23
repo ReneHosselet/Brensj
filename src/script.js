@@ -73,7 +73,7 @@ const loadingManager = new THREE.LoadingManager(
   (itemUrl, itemsLoaded, itemsTotal) => {
     console.log(itemsLoaded + " / " + itemsTotal);
     // const progressRatio = itemsLoaded / itemsTotal;
-    const progressRatio = itemsLoaded / 26;
+    const progressRatio = itemsLoaded / 28;
     loadingbartext.innerHTML = Math.floor(progressRatio * 100) + "%";
   }
 );
@@ -252,7 +252,7 @@ gui
   .min(-5)
   .max(5)
   .step(0.001)
-  .name("lightX");
+  .name("lightX"); 
 gui
   .add(directionalLight.position, "y")
   .min(-5)
@@ -315,9 +315,15 @@ camera.position.set(-3, 3, -8);
 scene.add(camera);
 // Controls
 //orbit
+const lerpParams = {
+  lerpAlpha:0.1,
+}
+let camTarget = new THREE.Vector3(0,1.5,1);
+const fcsObj = new THREE.Object3D();
+fcsObj.position.set(camTarget.x,camTarget.y,camTarget.z);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.target.set(0, 1.5, 1);
+controls.target.set(camTarget.x,camTarget.y,camTarget.z);
 
 controls.maxDistance = 20;
 controls.maxPolarAngle = Math.PI / 1.85;
@@ -363,16 +369,19 @@ composer.addPass(renderPass);
  * Animate
  */
 const tick = () => {
-  // Update controls
-  controls.update();
+  //orbitcamera follows target
+  if (camTarget !== undefined && fcsObj !== undefined){
+    // Update controls
+    controls.update();
+    controls.target.copy(fcsObj.position)  
+    fcsObj.position.lerp(camTarget, lerpParams.lerpAlpha)       
+  }
   // Render
   renderer.render(scene, camera);
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
-  //post processing
-  // composer.render();
   //tween animation
-  TWEEN.update();
+  TWEEN.update();  
 };
 tick();
 /**
@@ -452,50 +461,65 @@ const afwerkingsNiveau = () => {
   //kast3
   meubilair["kast3_meub"].children[0].material = m1;
   meubilair["kast3_meub"].children[1].material = m3;
-  //kast4
-  meubilair["kast4_meub"].children[0].material = m1;
-  meubilair["kast4_meub"].children[1].material = m3;
-  meubilair["kast4_meub_2"].children[0].material = m1;
-  meubilair["kast4_meub_2"].children[1].material = m3;
-  //kast4 laden
-  meubilair["kast4_meub_laden"].children[0].material = m1;
-  meubilair["kast4_meub_laden"].children[1].material = m3;
-  meubilair["kast4_meub_2_laden"].children[0].material = m1;
-  meubilair["kast4_meub_2_laden"].children[1].material = m3;
   //kast5
   meubilair["kast5_meub"].children[0].material = m1;
   meubilair["kast5_meub"].children[1].material = m2;
   meubilair["kast5_meub"].children[2].material = m3;
-  //kast6
-  //kast6 nr  
   if (brensjParams.afwerking === "cosy") {
-    //
-    meubilair["kast6_meub"].children[0].material = bruinMeub;
-    meubilair["kast6_meub"].children[1].material = bruinMeub;
-    meubilair["kast6_meub"].children[2].material = witMeub;
-    //
-    meubilair["kast6_meub_nr"].children[0].material = bruinMeub;
-    meubilair["kast6_meub_nr"].children[1].material = bruinMeub;
-    meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    ////kast6
+    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = bruinMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = bruinMeub;
+    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    //kast 4
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = bruinMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = bruinMeub;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = witMeub
+    //kast8 en 3
+    meubilair["kast8_meub"].children[0].material = bruinMeub;
+    meubilair["kast8_meub"].children[1].material = witMeub;
+    meubilair["kast3_meub"].children[0].material = bruinMeub;
+    meubilair["kast3_meub"].children[1].material = witMeub;
+    //wasmachine
+    meubilair["wasmachine1_meub"].children[1].material = bruinMeub;
+    //wasbak
+  meubilair["wasbak1_meub_nr"].children[2].material = m1;
   } else if (brensjParams.afwerking === "premium") {
-    //
-    meubilair["kast6_meub"].children[0].material = zwartMeub;
-    meubilair["kast6_meub"].children[1].material = zwartMeub;
-    meubilair["kast6_meub"].children[2].material = witMeub;
-    //
-    meubilair["kast6_meub_nr"].children[0].material = zwartMeub;
-    meubilair["kast6_meub_nr"].children[1].material = zwartMeub;
-    meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    ////kast6
+    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = granietZwart;
+    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    //kast 4
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = grijsMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = granietZwart;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = zwartMeub
+    //kast8 en 3
+    meubilair["kast8_meub"].children[0].material = grijsMeub;
+    meubilair["kast8_meub"].children[1].material = zwartMeub;
+    meubilair["kast3_meub"].children[0].material = grijsMeub;
+    meubilair["kast3_meub"].children[1].material = zwartMeub;
+    //wasmachine
+    meubilair["wasmachine1_meub"].children[1].material = granietZwart;
+    //wasbak
+    meubilair["wasbak1_meub_nr"].children[2].material = grijsMeub;
   } else if (brensjParams.afwerking === "high-end") {
-    //
-    meubilair["kast6_meub"].children[0].material = zwartMeub;
-    meubilair["kast6_meub"].children[1].material = witMeub;
-    meubilair["kast6_meub"].children[2].material = zwartMeub;
-    //
-    meubilair["kast6_meub_nr"].children[0].material = zwartMeub;
-    meubilair["kast6_meub_nr"].children[1].material = witMeub;
-    meubilair["kast6_meub_nr"].children[2].material = zwartMeub;
-  }
+    ////kast6
+    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = witMeub;
+    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = grijsMeub;
+    //kast 4
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = bruinMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = witMeub;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = zwartMeub;
+    //kast8 en 3
+    meubilair["kast8_meub"].children[0].material = grijsMeub;
+    meubilair["kast8_meub"].children[1].material = zwartMeub;
+    meubilair["kast3_meub"].children[0].material = grijsMeub;
+    meubilair["kast3_meub"].children[1].material = zwartMeub;
+    //wasmachine
+    meubilair["wasmachine1_meub"].children[1].material = witMeub;
+    //wasbak
+    meubilair["wasbak1_meub_nr"].children[2].material = bruinMeub;
+    }
   // meubilair["kast6_meub_nr"].children[2].material = m3;
   //kast6_4
   meubilair["kast6_meub_4"].children[0].material = m1;
@@ -505,11 +529,6 @@ const afwerkingsNiveau = () => {
   meubilair["kast6_meub_nr_4"].children[0].material = m1;
   meubilair["kast6_meub_nr_4"].children[1].material = m2;
   meubilair["kast6_meub_nr_4"].children[2].material = m3;
-  //kast8
-  meubilair["kast8_meub"].children[0].material = m1;
-  meubilair["kast8_meub"].children[1].material = m3;
-  //wasbak
-  meubilair["wasbak1_meub_nr"].children[2].material = m1;
   //eetmeub
   meubilair["eet1_meub"].children[0].material = m1;
   meubilair["eet1_meub"].children[1].material = m3;
@@ -613,9 +632,7 @@ let plugs = {};
 let bool;
 let kot;
 //materiaal
-let zwartMeub;
-let bruinMeub;
-let witMeub;
+let zwartMeub,bruinMeub,granietZwart,grijsMeub,witMeub;
 let quartz;
 const init = () => {
   for (const child of module.children) {
@@ -725,9 +742,11 @@ const init = () => {
         break;
       case "kast6_Meubilair":
         meubilair["kast6_meub"] = child;
+        grijsMeub = child.children[0].material;
+        granietZwart = child.children[1].material;
         break;
       case "kast6_Meubilair_4":
-        meubilair["kast6_meub_4"] = child;
+        meubilair["kast6_meub_4"] = child;        
         break;
       case "kast6_Meubilair_NR":
         meubilair["kast6_meub_nr"] = child;
@@ -850,7 +869,6 @@ const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
   moduleGroup.scale.set(0.1, 0.1, 0.1);
   moduleGroup.rotation.y = Math.PI;
   changeMaterial(brensjParams.binnenMateriaal, brensjParams.vloerMateriaal);
-  // changeCameraPosition();
   scene.add(moduleGroup);
 };
 const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
@@ -891,8 +909,8 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
     } else {
       mModule.add(lights["light1"].clone());
     }
-    const pLight = new THREE.PointLight("#ffffff", 1, 2);
-    const pLight1 = new THREE.PointLight("#ffffff", 1, 2);
+    const pLight = new THREE.PointLight("#ffffff", 1, 10);
+    const pLight1 = new THREE.PointLight("#ffffff", 1, 10);
     pLight.position.set(0, 29, -20);
     pLight1.position.set(0, 29, -10);
     mModule.add(pLight, pLight1);
@@ -1292,6 +1310,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
         mdlgrp.add(meubilair["kast6_meub_up"].clone());
+        mdlgrp.add(meubilair["tafel1"].clone());
       } else if (mdlnmbr === 1) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 3);
         result = results[0];
@@ -1303,10 +1322,6 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(meubilair["kast4_meub"].clone());
         mdlgrp.add(meubilair["bed1_meub"].clone());
         mdlgrp.add(meubilair["bed1_meub_matras"].clone());
-        const tv = electronica["monitor1"].clone();
-        tv.position.z += 3;
-        tv.position.y -= 1;
-        mdlgrp.add(tv);
         mdlgrp.add(frameOpvulling["fframetussenscheiding3"].clone());
         if (
           brensjParams.afwerking === "premium" ||
@@ -1338,15 +1353,12 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         } else if (brensjParams.work === "live-care-4-rv") {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
+        mdlgrp.add(meubilair["tafel1"].clone());
       } else if (mdlnmbr === 1) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
         result = results[0];
         result1 = results[1];
         mdlgrp.add(meubilair["kast4_meub_2"].clone());
-        const tv = electronica["monitor1"].clone();
-        tv.position.z += 4;
-        tv.position.y -= 1;
-        mdlgrp.add(tv);
         mdlgrp.add(frameOpvulling["fframetussenscheiding3"].clone());
         if (
           brensjParams.afwerking === "premium" ||
@@ -1584,6 +1596,7 @@ initSky();
 const cameraPosities = {
   0: new THREE.Vector3(-3, 3, -8),
 };
+//change camera position *************************************************************************
 let freeCam = false;
 let pos;
 let tar;
@@ -1598,36 +1611,31 @@ const changeCameraPosition = () => {
         cameraPosities[0].z
       );
       freeCam = true;
+      tar2 = new THREE.Vector3(0, 1.5, 1);
     }
-    // tar2 = new THREE.Vector3( 0,
-    //   1.5,
-    //   -moduleGroup.children[moduleGroup.children.length - 1].position.z / 10);
-    // controls.target.set(
-    //   0,
-    //   1.5,
-    //   -moduleGroup.children[moduleGroup.children.length - 1].position.z / 10
-    // );
   } else {
     tar = new THREE.Vector3(
       cameraPosities[brensjParams.camPos].x,
       cameraPosities[brensjParams.camPos].y,
       cameraPosities[brensjParams.camPos].z
     );
-    tar2 = new THREE.Vector3(tar.x, tar.y, tar.z + 0.001);
+    tar2 = new THREE.Vector3(0, 1.5, tar.z + 1.25);
     freeCam = false;
-    const tweenTar = new TWEEN.Tween(tar).to(tar2, 1000);
-    tweenTar.onUpdate(function () {
-      controls.target.set(tar2.x, tar2.y, tar2.z + 0.001);
-    });
-    tweenTar.start();
+    
+    // const tweenTar = new TWEEN.Tween(tar).to(tar2, 1000);
+    // tweenTar.onUpdate(function () {
+    //   controls.target.set(tar2.x, tar2.y, tar2.z + 0.001);
+    // });
+    // tweenTar.start();
   }
   const tweenPos = new TWEEN.Tween(pos).to(tar, 1000);
+  camTarget = tar2;
   tweenPos.onUpdate(function () {
     camera.position.set(pos.x, pos.y, pos.z);
-    camera.lookAt(tar);
   });
   tweenPos.start();
 };
+//afwerkingsimages ********************************************************************************
 const codeElement = document.getElementById("code-value");
 const cosyImg = document.querySelector('label[for="cosy"] .keuze-img');
 const premiumImg = document.querySelector('label[for="premium"] .keuze-img');

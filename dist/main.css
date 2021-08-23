@@ -187,12 +187,6 @@ body
   display: flex;
   flex-direction: row;
 }
-.step5LeftLabel {
-  
-}
-.step5RightLabel {
-  
-}
 #step5leftSide{
   width: 25%;
   display: flex;
