@@ -11,6 +11,8 @@ import { CSG } from "three-csg-ts/lib/cjs/CSG.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { Vector3 } from "three";
+//exporters
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 let composer, renderPass;
 let afwerkingModule;
 //TWEEN
@@ -46,12 +48,6 @@ function fetchJsonData() {
   data_binnen = JSON.parse(brensj_posts.data_bnn);
   data_vloer = JSON.parse(brensj_posts.data_vlr);
   data_afwerking = JSON.parse(brensj_posts.data_afw);
-
-  // console.log(data_module);
-  // console.log(data_gevel);
-  // console.log(data_binnen);
-  // console.log(data_vloer);
-  // console.log(data_afwerking);
 }
 fetchJsonData();
 
@@ -166,38 +162,37 @@ const updateAllMaterials = () => {
     }
   });
 };
-// const shadowsToMesh = (obj) => {
-//   for (var i = obj.children.length - 1; i >= 0; i--) {
-//     if (obj.children[i] instanceof THREE.Mesh) {
-//       obj.children[i].receiveShadow = true;
-//       obj.children[i].castShadow = true;
-//     } else {
-//       shadowsToMesh(obj.children[i]);
-//     }
-//   }
-// };
 /**
- * Environment map
+ * export gltf
  */
-// const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager);
-// const environmentMap = cubeTextureLoader.load([
-//   path + "./textures/environmentMaps/0/px.jpg",
-//   path + "./textures/environmentMaps/0/nx.jpg",
-//   path + "./textures/environmentMaps/0/py.jpg",
-//   path + "./textures/environmentMaps/0/ny.jpg",
-//   path + "./textures/environmentMaps/0/pz.jpg",
-//   path + "./textures/environmentMaps/0/nz.jpg",
-// ]);
-// environmentMap.encoding = THREE.sRGBEncoding;
-// scene.background = environmentMap;
-// scene.environment = environmentMap;
-// debugObject.envMapIntensity = 8;
-// gui
-//   .add(debugObject, "envMapIntensity")
-//   .min(0)
-//   .max(10)
-//   .step(0.001)
-//   .onChange(updateAllMaterials);
+ const link = document.createElement('a');
+ link.style.display = 'none';
+ function exportGLTF(input) {
+     const gltfExporter = new GLTFExporter();
+     const options = {
+         trs: false,
+         onlyVisible: true,
+         truncateDrawRange: true,
+         binary: false,
+         maxTextureSize: 1024 || Infinity // To prevent NaN value
+     };
+     gltfExporter.parse(input, function (result) {
+         const output = JSON.stringify(result, null, 2);
+         saveString(output, 'model.gltf');
+     }, options);
+ }
+ function saveString(text, filename) {
+     save(new Blob([text], { type: 'text/plain' }), filename);
+ }
+ function save(blob, filename) {
+     link.href = URL.createObjectURL(blob);
+     link.download = filename;
+     link.click();
+     // URL.revokeObjectURL( url ); breaks Firefox...
+ }
+ document.getElementById('btnBestellen').addEventListener('click', function () {
+     exportGLTF(moduleGroup);
+ });
 /**
  * Models
  */
@@ -470,13 +465,16 @@ const afwerkingsNiveau = () => {
     meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = bruinMeub;
     meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = bruinMeub;
     meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = witMeub;
+    meubilair["kast6_meub_up_2"].children[0].material = bruinMeub;
+    meubilair["kast6_meub_up_2"].children[1].material = witMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = bruinMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = bruinMeub;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = witMeub
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = bruinMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = bruinMeub;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = witMeub
     //kast8 en 3
-    meubilair["kast8_meub"].children[0].material = bruinMeub;
-    meubilair["kast8_meub"].children[1].material = witMeub;
+    meubilair["kast8_meub"].children[0].material = witMeub;
+    meubilair["kast8_meub"].children[1].material = zwartMeub;
     meubilair["kast3_meub"].children[0].material = bruinMeub;
     meubilair["kast3_meub"].children[1].material = witMeub;
     //wasmachine
@@ -488,12 +486,15 @@ const afwerkingsNiveau = () => {
     meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
     meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = granietZwart;
     meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = zwartMeub;
+    meubilair["kast6_meub_up_2"].children[0].material = grijsMeub;
+    meubilair["kast6_meub_up_2"].children[1].material = witMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = grijsMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = granietZwart;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = zwartMeub
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = grijsMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = granietZwart;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = zwartMeub
     //kast8 en 3
-    meubilair["kast8_meub"].children[0].material = grijsMeub;
+    meubilair["kast8_meub"].children[0].material = witMeub;
     meubilair["kast8_meub"].children[1].material = zwartMeub;
     meubilair["kast3_meub"].children[0].material = grijsMeub;
     meubilair["kast3_meub"].children[1].material = zwartMeub;
@@ -506,10 +507,11 @@ const afwerkingsNiveau = () => {
     meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
     meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = witMeub;
     meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = grijsMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = zwartMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = bruinMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = witMeub;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = zwartMeub;
+    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = bruinMeub;
+    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = witMeub;
+    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = zwartMeub;
     //kast8 en 3
     meubilair["kast8_meub"].children[0].material = grijsMeub;
     meubilair["kast8_meub"].children[1].material = zwartMeub;
@@ -737,6 +739,18 @@ const init = () => {
       case "kast4_Meubilair_2_laden":
         meubilair["kast4_meub_2_laden"] = child;
         break;
+      case "kast4_Meubilair_1":
+        meubilair["kast4_meub_1"] = child;
+        break;
+      case "kast4_Meubilair_1_laden":
+        meubilair["kast4_meub_1_laden"] = child;
+        break;
+      case "kast4_Meubilair_2_1":
+        meubilair["kast4_meub_2_1"] = child;
+        break;
+      case "kast4_Meubilair_2_1_laden":
+        meubilair["kast4_meub_2_1_laden"] = child;
+        break;
       case "kast5_Meubilair":
         meubilair["kast5_meub"] = child;
         break;
@@ -753,6 +767,9 @@ const init = () => {
         break;
       case "kast6_Meubilair_up":
         meubilair["kast6_meub_up"] = child;
+        break;
+      case "kast6_Meubilair_up_2":
+        meubilair["kast6_meub_up_2"] = child;
         break;
       case "kast6_Meubilair_up_4":
         meubilair["kast6_meub_up_4"] = child;
@@ -797,6 +814,13 @@ const init = () => {
       case "eetaanrecht1_Meubilair":
         meubilair["eet1_meub"] = child;
         break;
+      case "zetel1":
+        meubilair["zetel1_meub"] = child;
+        break;
+      case "zetel1_1":
+        meubilair["zetel1_1_meub"] = child;
+        break;
+
       //side module
       case "sWindow1":
         side["swindow1"] = child;
@@ -1309,8 +1333,13 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         } else if (brensjParams.work === "live-care-3-rv") {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
-        mdlgrp.add(meubilair["kast6_meub_up"].clone());
+        if (brensjParams.afwerking ==="high-end") {
+          mdlgrp.add(meubilair["kast6_meub_up"].clone());
+        }else{
+          mdlgrp.add(meubilair["kast6_meub_up_2"].clone());
+        }
         mdlgrp.add(meubilair["tafel1"].clone());
+        mdlgrp.add(meubilair["zetel1_meub"].clone());
       } else if (mdlnmbr === 1) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 3);
         result = results[0];
@@ -1353,12 +1382,19 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         } else if (brensjParams.work === "live-care-4-rv") {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
+        if (brensjParams.afwerking ==="high-end") {
+          mdlgrp.add(meubilair["kast6_meub_up"].clone());
+        }else{
+          mdlgrp.add(meubilair["kast6_meub_up_2"].clone());
+        }        
         mdlgrp.add(meubilair["tafel1"].clone());
       } else if (mdlnmbr === 1) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
         result = results[0];
         result1 = results[1];
         mdlgrp.add(meubilair["kast4_meub_2"].clone());
+        mdlgrp.add(meubilair["kast4_meub_2_1"].clone());
+        mdlgrp.add(meubilair["kast4_meub_2_1_laden"].clone());
         mdlgrp.add(frameOpvulling["fframetussenscheiding3"].clone());
         if (
           brensjParams.afwerking === "premium" ||
@@ -1370,10 +1406,16 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
           frameOpvulling["fframetussenscheiding1"].clone();
         tussenScheiding.position.z -= 17;
         mdlgrp.add(tussenScheiding);
+        mdlgrp.add(meubilair["zetel1_1_meub"].clone());
       } else if (mdlnmbr === 2) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
         result = results[0];
         result1 = results[1];
+        mdlgrp.add(meubilair["kast3_meub"].clone());
+        mdlgrp.add(meubilair["kast4_meub_1"].clone());
+        if (brensjParams.afwerking !== "cosy") {
+          mdlgrp.add(meubilair["kast4_meub_1_laden"].clone());
+        }
       } else if (mdlnmbr === brensjParams.modules - 1) {
         //achterste
         mdlgrp.add(frameOpvulling["fframetussenscheiding1"].clone());
