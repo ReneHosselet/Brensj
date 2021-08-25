@@ -11,6 +11,7 @@ import { CSG } from "three-csg-ts/lib/cjs/CSG.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { Vector3 } from "three";
+import { BufferGeometryUtils } from "three";
 //exporters
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 let composer, renderPass;
@@ -168,6 +169,7 @@ const updateAllMaterials = () => {
  const link = document.createElement('a');
  link.style.display = 'none';
  function exportGLTF(input) {
+    // indexGeometries(moduleGroup);
      const gltfExporter = new GLTFExporter();
      const options = {
          trs: false,
@@ -177,12 +179,17 @@ const updateAllMaterials = () => {
          maxTextureSize: 1024 || Infinity // To prevent NaN value
      };
      gltfExporter.parse(input, function (result) {
-         const output = JSON.stringify(result, null, 2);
-         saveString(output, 'model.gltf');
-     }, options);
+        //  const output = JSON.stringify(result, null, 2);
+        //  saveString(output, 'model.gltf');
+        saveArrayBuffer(result,'Brensj.glb');
+    //  }, options);
+     },{binary:true});
  }
  function saveString(text, filename) {
      save(new Blob([text], { type: 'text/plain' }), filename);
+ }
+ function saveArrayBuffer(buffer, filename) {
+     save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
  }
  function save(blob, filename) {
      link.href = URL.createObjectURL(blob);
@@ -212,7 +219,7 @@ gltfLoader.load(path + "./models/brensjtest1.glb", (gltf) => {
 //floor
 const floor = new THREE.Mesh(new THREE.CircleGeometry(100, 50), grassMaterial);
 floor.rotation.x = -Math.PI * 0.5;
-floor.position.y = -0.09;
+floor.position.y = 0;
 floor.material.receiveShadow = true;
 scene.add(floor);
 /**
@@ -615,6 +622,7 @@ const brensjParams = {
   afwerking: "cosy",
   camPos: 0,
   moduleID: 1951,
+  inbetweenSpace: 15.8,
 };
 /**
  * module init
@@ -941,7 +949,7 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
   }
 
   //add to main group
-  mModule.position.z = (-bboxLength / 2 + 3.75) * nmbr;
+  mModule.position.z = (-bboxLength /*/ 2 + 3.75*/ + brensjParams.inbetweenSpace) * nmbr;
   mModule.name = "module" + nmbr;
   cameraPosities[nmbr + 1] = new THREE.Vector3(
     (mModule.position.x - 5) * 0.1,
@@ -1078,7 +1086,6 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
             brensjParams.afwerking === "high-end"
           ) {
             mdlgrp.add(verwarming["verwarming_premium_left"].clone());
-            mdlgrp.add(electronica["tablet1"].clone());
           }
           mdlgrp.add(tafel1, tafel2);
         } else if (brensjParams.work === "work-2a") {
@@ -1093,8 +1100,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
           } else if (
             brensjParams.afwerking === "premium" ||
             brensjParams.afwerking === "high-end"
-          ) {
-            mdlgrp.add(electronica["tablet1"].clone());
+          ) {            
             mdlgrp.add(verwarming["verwarming_premium_left"].clone());
           }
         }
@@ -1105,6 +1111,12 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
           mdlgrp.add(kast1);
         } else if (brensjParams.work === "work-2a") {
           mdlgrp.add(electronica["monitor1"].clone());
+        }
+        if (
+          brensjParams.afwerking === "premium" ||
+          brensjParams.afwerking === "high-end"
+        ) { 
+        mdlgrp.add(electronica["tablet1"].clone());
         }
         mdlgrp.add(meubilair["tafel1"].clone());
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
@@ -1217,7 +1229,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
             brensjParams.afwerking === "premium" ||
             brensjParams.afwerking === "high-end"
           ) {
-            // mdlgrp.add(electronica["tablet1"].clone());
+            mdlgrp.add(electronica["tablet1"].clone());
           }
           //COSY
           else if (brensjParams.afwerking === "cosy") {
@@ -1253,7 +1265,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
             brensjParams.afwerking === "high-end"
           ) {
             mdlgrp.add(verwarming["verwarming_premium_left"].clone());
-            mdlgrp.add(electronica["tablet1"].clone());
+            // mdlgrp.add(electronica["tablet1"].clone());
           }
           //COSY
         }
@@ -1431,6 +1443,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
     }
   }
   //add to group
+  console.log(result)
+  // result.geometry = BufferGeometryUtils.mergeVertices(result.geometry);
+  // result1.geometry = BufferGeometryUtils.mergeVertices(result1.geometry);
   mdlgrp.add(result);
   mdlgrp.add(result1);
 };
@@ -1488,6 +1503,8 @@ const cutOutWalls = (objct, result, result1, mdlgrp, wallPos) => {
   const results = [];
   result = CSG.subtract(result, meshB);
   result1 = CSG.subtract(result1, meshB);
+  // result = BufferGeometryUtils.mergeVertices(result);
+  // result1 = BufferGeometryUtils.mergeVertices(result1);
   results.push(result);
   results.push(result1);
   if (name === "binnengevel_back") {
@@ -1861,6 +1878,18 @@ const Overzicht = () => {
     step5PriceSide.appendChild(priceSpan);
   }
 };
+//make all geometries indexed
+// const indexGeometries = (group) =>{
+//   for (var i = group.children.length - 1; i >= 0; i--) {
+//     if (group.children[i] instanceof THREE.Mesh) {
+//       if (group.children[i].geometry !== undefined) {
+//         group.children[i].geometry = BufferGeometryUtils.mergeVertices( group.children[i].geometry);
+//       }      
+//     } else {
+//       indexGeometries(group.children[i]);
+//     }
+//   }
+// }
 /*********************************************************************************************************************************************************************************
  * prijs bepalingen
  */
@@ -2197,6 +2226,7 @@ const removeButtonElements = () => {
     }
   }
 };
+//inrichting tonen/verbergen
 const checked = document.getElementById("inrichtingChckBx");
 checked.addEventListener("change", () => {
   toggleDecoration();
@@ -2237,6 +2267,8 @@ const checkArrayForElement = (child, array) => {
     }
   }
 };
+/**debug */
+gui.add(brensjParams, "inbetweenSpace").min(0).max(100).step(0.001).onFinishChange(setWork);
 
 // jQuery.post(ajax.url, data, function (response) {
 //   var return_response = new CustomEvent("server_response", {

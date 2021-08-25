@@ -96,7 +96,7 @@ body
     position: absolute;
     top: 55%;
     left: 50%;
-    font-family: fantasy;
+    font-family: 'Overpass', sans-serif;
 }
 .loader-inner {
     vertical-align: top;
