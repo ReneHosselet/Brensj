@@ -9,6 +9,6 @@ module.exports = merge(
         plugins:
         [
             new CleanWebpackPlugin()
-        ]
+        ]        
     }
 )

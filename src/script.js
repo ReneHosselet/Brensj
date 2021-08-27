@@ -10,31 +10,18 @@ import { CSG } from "three-csg-ts/lib/cjs/CSG.js";
 //post processing imports
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { Vector3 } from "three";
-import { BufferGeometryUtils } from "three";
+import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 //exporters
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-let composer, renderPass;
+import {DRACOExporter} from 'three/examples/jsm/exporters/DRACOExporter.js'; 
+import {NodeIO} from '@gltf-transform/core';
+import {KHRONOS_EXTENSIONS, DracoMeshCompression} from '@gltf-transform/extensions';
+import draco3d from 'draco3d';
+
+let composer, renderPass,exporter;
 let afwerkingModule;
 //TWEEN
 var TWEEN = require("@tweenjs/tween.js");
-//ftp ref ()
-// const logoAttri = document.querySelector(".").getAttribute("href");
-// const url = logoAttri + "/wp-content/themes/flux-child/configurator/";
-// //
-// function accessBackend() {
-//   let data = {
-//     action: "process_json",
-//     type: "fetch",
-//   };
-
-//   jQuery.post(ajax.url, data, function (response) {
-//     var return_response = new CustomEvent("server_response", {
-//       detail: { data: response },
-//     });
-//     window.dispatchEvent(return_response);
-//   });
-// }
 /**
  * json data
  */
@@ -163,7 +150,7 @@ const updateAllMaterials = () => {
     }
   });
 };
-/**
+/*********************************************************************************************************************
  * export gltf
  */
  const link = document.createElement('a');
@@ -175,32 +162,66 @@ const updateAllMaterials = () => {
          trs: false,
          onlyVisible: true,
          truncateDrawRange: true,
-         binary: false,
+         binary: true,
+         forceIndices:true,
          maxTextureSize: 1024 || Infinity // To prevent NaN value
      };
      gltfExporter.parse(input, function (result) {
         //  const output = JSON.stringify(result, null, 2);
         //  saveString(output, 'model.gltf');
-        saveArrayBuffer(result,'Brensj.glb');
+        // saveArrayBuffer(result,"brensj.glb");
+        dracoCompress(result);
     //  }, options);
-     },{binary:true});
+     },options);
  }
- function saveString(text, filename) {
-     save(new Blob([text], { type: 'text/plain' }), filename);
- }
- function saveArrayBuffer(buffer, filename) {
+//  function saveString(text, filename) {
+//      save(new Blob([text], { type: 'text/plain' }), filename);
+//  }
+function saveArrayBuffer(buffer, filename) {
      save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
+    // saveToAR(buffer, filename);
+    //  compressDraco(new Blob([buffer], { type: 'application/octet-stream' }), filename);
  }
+ //locally downloads file in downlod folder
  function save(blob, filename) {
      link.href = URL.createObjectURL(blob);
      link.download = filename;
      link.click();
      // URL.revokeObjectURL( url ); breaks Firefox...
  }
+ //saves file on server and go to ar page 
+ function saveToAR (buffer,filename){
+  const fs = require('browserify-fs');
+  const pathName = new URL(path);
+  console.log(pathName.pathname +filename);
+    fs.writeFile(pathName.pathname +filename, buffer, function (err) {
+    if (err) throw err;               console.log('Results Received');
+    }); 
+}
  document.getElementById('btnBestellen').addEventListener('click', function () {
      exportGLTF(moduleGroup);
  });
-/**
+ /**
+  * export draco compression
+  */
+async function dracoCompress(arrayBuffer){
+  const io = new NodeIO()
+  .registerExtensions(KHRONOS_EXTENSIONS)
+  .registerDependencies({
+      'draco3d.encoder': await draco3d.createEncoderModule(),
+    });
+  const document = io.readBinary(arrayBuffer); // read GLB from ArrayBuffer
+  document.createExtension(DracoMeshCompression)
+    .setRequired(true)
+    .setEncoderOptions({
+      method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
+      encodeSpeed: 5,
+    });
+  const compressedArrayBuffer = io.writeBinary(document);  // write GLB to ArrayBuffer
+  saveArrayBuffer(compressedArrayBuffer,"brensj.glb");
+ }
+ 
+/***********************************************************************************************************************************
  * Models
  */
 //module
@@ -210,7 +231,7 @@ let bboxLength;
 let bboxHeight;
 gltfLoader.load(path + "./models/brensjtest1.glb", (gltf) => {
   module = gltf.scene;
-  console.log(module);
+  // console.log(module);
   bbox = new THREE.Box3().setFromObject(module);
   bboxLength = bbox.max.z - bbox.min.z;
   bboxHeight = bbox.max.y - bbox.min.y;
@@ -558,11 +579,8 @@ const step4Container = document.getElementById("step4");
 const loadFile = () => {
   THREE.Cache.enabled = true;
   const fileLoader = new THREE.FileLoader();
-  if (afwerkingModule === undefined) {
-    afwerkingModule = brensjParams.work;
-  }
   const file = fileLoader.load(
-    path + "info/" + afwerkingModule + "-" + brensjParams.afwerking + ".txt",
+    path + "info/" + brensjParams.work + "-" + brensjParams.afwerking + ".txt",
     function (data) {
       createBulletinPoints(data);
     }
@@ -1443,9 +1461,6 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
     }
   }
   //add to group
-  console.log(result)
-  // result.geometry = BufferGeometryUtils.mergeVertices(result.geometry);
-  // result1.geometry = BufferGeometryUtils.mergeVertices(result1.geometry);
   mdlgrp.add(result);
   mdlgrp.add(result1);
 };
