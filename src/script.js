@@ -507,6 +507,8 @@ const afwerkingsNiveau = () => {
     meubilair["kast3_meub"].children[1].material = witMeub;
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = bruinMeub;
+    //toilet
+    meubilair["toilet_meub"].children[1].material = witMeub;
     //wasbak
   meubilair["wasbak1_meub_nr"].children[2].material = m1;
   } else if (brensjParams.afwerking === "premium") {
@@ -528,6 +530,8 @@ const afwerkingsNiveau = () => {
     meubilair["kast3_meub"].children[1].material = zwartMeub;
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = granietZwart;
+    //toilet
+    meubilair["toilet_meub"].children[1].material = witMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = grijsMeub;
   } else if (brensjParams.afwerking === "high-end") {
@@ -547,6 +551,8 @@ const afwerkingsNiveau = () => {
     meubilair["kast3_meub"].children[1].material = zwartMeub;
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = witMeub;
+    //toilet
+    meubilair["toilet_meub"].children[1].material = grijsMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = bruinMeub;
     }
@@ -821,6 +827,9 @@ const init = () => {
       case "bed1_Meubilair_matras":
         meubilair["bed1_meub_matras"] = child;
         break;
+      case "toilet_Meubilair":
+        meubilair["toilet_meub"] = child;
+        break;
       case "tafel1":
         meubilair["tafel1"] = child;
         bruinMeub = child.children[0].material;
@@ -846,7 +855,6 @@ const init = () => {
       case "zetel1_1":
         meubilair["zetel1_1_meub"] = child;
         break;
-
       //side module
       case "sWindow1":
         side["swindow1"] = child;
@@ -1394,6 +1402,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(frameOpvulling["fframetussenscheiding1_ceiling"].clone());
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
+        mdlgrp.add(meubilair["toilet_meub"].clone());
         if (brensjParams.work === "live-care-3") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-3-rv") {
@@ -1452,6 +1461,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(frameOpvulling["fframetussenscheiding1_ceiling"].clone());
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
+        mdlgrp.add(meubilair["toilet_meub"].clone());
         if (brensjParams.work === "live-care-4") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-4-rv") {
@@ -1676,7 +1686,7 @@ let pos;
 let tar;
 let tar2;
 const changeCameraPosition = () => {
-  pos = new Vector3(camera.position.x, camera.position.y, camera.position.z);
+  pos = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
   if (brensjParams.camPos === 0) {
     if (!freeCam) {
       tar = new THREE.Vector3(
