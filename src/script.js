@@ -12,13 +12,16 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 //exporters
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import {DRACOExporter} from 'three/examples/jsm/exporters/DRACOExporter.js'; 
-import {NodeIO} from '@gltf-transform/core';
-import {KHRONOS_EXTENSIONS, DracoMeshCompression} from '@gltf-transform/extensions';
-import draco3d from 'draco3d';
+import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
+import { DRACOExporter } from "three/examples/jsm/exporters/DRACOExporter.js";
+import { NodeIO } from "@gltf-transform/core";
+import {
+  KHRONOS_EXTENSIONS,
+  DracoMeshCompression,
+} from "@gltf-transform/extensions";
+import draco3d from "draco3d";
 
-let composer, renderPass,exporter;
+let composer, renderPass, exporter;
 let afwerkingModule;
 //TWEEN
 var TWEEN = require("@tweenjs/tween.js");
@@ -153,74 +156,80 @@ const updateAllMaterials = () => {
 /*********************************************************************************************************************
  * export gltf
  */
- const link = document.createElement('a');
- link.style.display = 'none';
- function exportGLTF(input) {
-    // indexGeometries(moduleGroup);
-     const gltfExporter = new GLTFExporter();
-     const options = {
-         trs: false,
-         onlyVisible: true,
-         truncateDrawRange: true,
-         binary: true,
-         forceIndices:true,
-         maxTextureSize: 1024 || Infinity // To prevent NaN value
-     };
-     gltfExporter.parse(input, function (result) {
-        //  const output = JSON.stringify(result, null, 2);
-        //  saveString(output, 'model.gltf');
-        // saveArrayBuffer(result,"brensj.glb");
-        dracoCompress(result);
-    //  }, options);
-     },options);
- }
+const link = document.createElement("a");
+link.style.display = "none";
+function exportGLTF(input) {
+  // indexGeometries(moduleGroup);
+  const gltfExporter = new GLTFExporter();
+  const options = {
+    trs: false,
+    onlyVisible: true,
+    truncateDrawRange: true,
+    binary: true,
+    forceIndices: true,
+    maxTextureSize: 1024 || Infinity, // To prevent NaN value
+  };
+  gltfExporter.parse(
+    input,
+    function (result) {
+      //  const output = JSON.stringify(result, null, 2);
+      //  saveString(output, 'model.gltf');
+      // saveArrayBuffer(result,"brensj.glb");
+      dracoCompress(result);
+      //  }, options);
+    },
+    options
+  );
+}
 //  function saveString(text, filename) {
 //      save(new Blob([text], { type: 'text/plain' }), filename);
 //  }
 function saveArrayBuffer(buffer, filename) {
-     save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
-    // saveToAR(buffer, filename);
-    //  compressDraco(new Blob([buffer], { type: 'application/octet-stream' }), filename);
- }
- //locally downloads file in downlod folder
- function save(blob, filename) {
-     link.href = URL.createObjectURL(blob);
-     link.download = filename;
-     link.click();
-     // URL.revokeObjectURL( url ); breaks Firefox...
- }
- //saves file on server and go to ar page 
- function saveToAR (buffer,filename){
-  const fs = require('browserify-fs');
-  const pathName = new URL(path);
-  console.log(pathName.pathname +filename);
-    fs.writeFile(pathName.pathname +filename, buffer, function (err) {
-    if (err) throw err;               console.log('Results Received');
-    }); 
+  save(new Blob([buffer], { type: "application/octet-stream" }), filename);
+  // saveToAR(buffer, filename);
+  //  compressDraco(new Blob([buffer], { type: 'application/octet-stream' }), filename);
 }
- document.getElementById('btnBestellen').addEventListener('click', function () {
-     exportGLTF(moduleGroup);
- });
- /**
-  * export draco compression
-  */
-async function dracoCompress(arrayBuffer){
+//locally downloads file in downlod folder
+function save(blob, filename) {
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  // URL.revokeObjectURL( url ); breaks Firefox...
+}
+//saves file on server and go to ar page
+function saveToAR(buffer, filename) {
+  const fs = require("browserify-fs");
+  const pathName = new URL(path);
+  console.log(pathName.pathname + filename);
+  fs.writeFile(pathName.pathname + filename, buffer, function (err) {
+    if (err) throw err;
+    console.log("Results Received");
+  });
+}
+document.getElementById("btnBestellen").addEventListener("click", function () {
+  exportGLTF(moduleGroup);
+});
+/**
+ * export draco compression
+ */
+async function dracoCompress(arrayBuffer) {
   const io = new NodeIO()
-  .registerExtensions(KHRONOS_EXTENSIONS)
-  .registerDependencies({
-      'draco3d.encoder': await draco3d.createEncoderModule(),
+    .registerExtensions(KHRONOS_EXTENSIONS)
+    .registerDependencies({
+      "draco3d.encoder": await draco3d.createEncoderModule(),
     });
   const document = io.readBinary(arrayBuffer); // read GLB from ArrayBuffer
-  document.createExtension(DracoMeshCompression)
+  document
+    .createExtension(DracoMeshCompression)
     .setRequired(true)
     .setEncoderOptions({
       method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
       encodeSpeed: 5,
     });
-  const compressedArrayBuffer = io.writeBinary(document);  // write GLB to ArrayBuffer
-  saveArrayBuffer(compressedArrayBuffer,"brensj.glb");
- }
- 
+  const compressedArrayBuffer = io.writeBinary(document); // write GLB to ArrayBuffer
+  saveArrayBuffer(compressedArrayBuffer, "brensj.glb");
+}
+
 /***********************************************************************************************************************************
  * Models
  */
@@ -275,7 +284,7 @@ gui
   .min(-5)
   .max(5)
   .step(0.001)
-  .name("lightX"); 
+  .name("lightX");
 gui
   .add(directionalLight.position, "y")
   .min(-5)
@@ -339,14 +348,14 @@ scene.add(camera);
 // Controls
 //orbit
 const lerpParams = {
-  lerpAlpha:0.1,
-}
-let camTarget = new THREE.Vector3(0,1.5,1);
+  lerpAlpha: 0.1,
+};
+let camTarget = new THREE.Vector3(0, 1.5, 1);
 const fcsObj = new THREE.Object3D();
-fcsObj.position.set(camTarget.x,camTarget.y,camTarget.z);
+fcsObj.position.set(camTarget.x, camTarget.y, camTarget.z);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.target.set(camTarget.x,camTarget.y,camTarget.z);
+controls.target.set(camTarget.x, camTarget.y, camTarget.z);
 
 controls.maxDistance = 20;
 controls.maxPolarAngle = Math.PI / 1.85;
@@ -393,18 +402,18 @@ composer.addPass(renderPass);
  */
 const tick = () => {
   //orbitcamera follows target
-  if (camTarget !== undefined && fcsObj !== undefined){
+  if (camTarget !== undefined && fcsObj !== undefined) {
     // Update controls
     controls.update();
-    controls.target.copy(fcsObj.position)  
-    fcsObj.position.lerp(camTarget, lerpParams.lerpAlpha)       
+    controls.target.copy(fcsObj.position);
+    fcsObj.position.lerp(camTarget, lerpParams.lerpAlpha);
   }
   // Render
   renderer.render(scene, camera);
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
   //tween animation
-  TWEEN.update();  
+  TWEEN.update();
 };
 tick();
 /**
@@ -490,16 +499,40 @@ const afwerkingsNiveau = () => {
   meubilair["kast5_meub"].children[2].material = m3;
   if (brensjParams.afwerking === "cosy") {
     ////kast6
-    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = bruinMeub;
-    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = bruinMeub;
-    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
-    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = witMeub;
+    meubilair["kast6_meub"].children[0].material = meubilair[
+      "kast6_meub_nr"
+    ].children[0].material = bruinMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair[
+      "kast6_meub_nr"
+    ].children[1].material = bruinMeub;
+    meubilair["kast6_meub"].children[2].material = meubilair[
+      "kast6_meub_nr"
+    ].children[2].material = witMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair[
+      "kast6_meub_nr"
+    ].children[3].material = witMeub;
     meubilair["kast6_meub_up_2"].children[0].material = bruinMeub;
     meubilair["kast6_meub_up_2"].children[1].material = witMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = bruinMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = bruinMeub;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = witMeub
+    meubilair["kast4_meub"].children[0].material =
+      meubilair["kast4_meub_2"].children[0].material =
+      meubilair["kast4_meub_1"].children[0].material =
+      meubilair["kast4_meub_2_1"].children[0].material =
+      meubilair["kast4_meub_laden"].children[0].material =
+      meubilair["kast4_meub_1_laden"].children[0].material =
+      meubilair["kast4_meub_2_laden"].children[0].material =
+      meubilair["kast4_meub_2_1_laden"].children[0].material =
+        bruinMeub;
+    meubilair["kast4_meub"].children[1].material =
+      meubilair["kast4_meub_2"].children[1].material =
+      meubilair["kast4_meub_1"].children[1].material =
+      meubilair["kast4_meub_2_1"].children[1].material =
+        bruinMeub;
+    meubilair["kast4_meub_laden"].children[1].material =
+      meubilair["kast4_meub_2_laden"].children[1].material =
+      meubilair["kast4_meub_1_laden"].children[1].material =
+      meubilair["kast4_meub_2_1_laden"].children[1].material =
+        witMeub;
     //kast8 en 3
     meubilair["kast8_meub"].children[0].material = witMeub;
     meubilair["kast8_meub"].children[1].material = zwartMeub;
@@ -510,19 +543,43 @@ const afwerkingsNiveau = () => {
     //toilet
     meubilair["toilet_meub"].children[1].material = witMeub;
     //wasbak
-  meubilair["wasbak1_meub_nr"].children[2].material = m1;
+    meubilair["wasbak1_meub_nr"].children[2].material = m1;
   } else if (brensjParams.afwerking === "premium") {
     ////kast6
-    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
-    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = granietZwart;
-    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = witMeub;
-    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = zwartMeub;
+    meubilair["kast6_meub"].children[0].material = meubilair[
+      "kast6_meub_nr"
+    ].children[0].material = grijsMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair[
+      "kast6_meub_nr"
+    ].children[1].material = granietZwart;
+    meubilair["kast6_meub"].children[2].material = meubilair[
+      "kast6_meub_nr"
+    ].children[2].material = witMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair[
+      "kast6_meub_nr"
+    ].children[3].material = zwartMeub;
     meubilair["kast6_meub_up_2"].children[0].material = grijsMeub;
     meubilair["kast6_meub_up_2"].children[1].material = witMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = grijsMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = granietZwart;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = zwartMeub
+    meubilair["kast4_meub"].children[0].material =
+      meubilair["kast4_meub_2"].children[0].material =
+      meubilair["kast4_meub_1"].children[0].material =
+      meubilair["kast4_meub_2_1"].children[0].material =
+      meubilair["kast4_meub_laden"].children[0].material =
+      meubilair["kast4_meub_1_laden"].children[0].material =
+      meubilair["kast4_meub_2_laden"].children[0].material =
+      meubilair["kast4_meub_2_1_laden"].children[0].material =
+        grijsMeub;
+    meubilair["kast4_meub"].children[1].material =
+      meubilair["kast4_meub_2"].children[1].material =
+      meubilair["kast4_meub_1"].children[1].material =
+      meubilair["kast4_meub_2_1"].children[1].material =
+        granietZwart;
+    meubilair["kast4_meub_laden"].children[1].material =
+      meubilair["kast4_meub_2_laden"].children[1].material =
+      meubilair["kast4_meub_1_laden"].children[1].material =
+      meubilair["kast4_meub_2_1_laden"].children[1].material =
+        zwartMeub;
     //kast8 en 3
     meubilair["kast8_meub"].children[0].material = witMeub;
     meubilair["kast8_meub"].children[1].material = zwartMeub;
@@ -536,14 +593,38 @@ const afwerkingsNiveau = () => {
     meubilair["wasbak1_meub_nr"].children[2].material = grijsMeub;
   } else if (brensjParams.afwerking === "high-end") {
     ////kast6
-    meubilair["kast6_meub"].children[0].material = meubilair["kast6_meub_nr"].children[0].material = grijsMeub;
-    meubilair["kast6_meub"].children[1].material = meubilair["kast6_meub_nr"].children[1].material = witMeub;
-    meubilair["kast6_meub"].children[2].material = meubilair["kast6_meub_nr"].children[2].material = grijsMeub;
-    meubilair["kast6_meub"].children[3].material = meubilair["kast6_meub_nr"].children[3].material = zwartMeub;
+    meubilair["kast6_meub"].children[0].material = meubilair[
+      "kast6_meub_nr"
+    ].children[0].material = grijsMeub;
+    meubilair["kast6_meub"].children[1].material = meubilair[
+      "kast6_meub_nr"
+    ].children[1].material = witMeub;
+    meubilair["kast6_meub"].children[2].material = meubilair[
+      "kast6_meub_nr"
+    ].children[2].material = grijsMeub;
+    meubilair["kast6_meub"].children[3].material = meubilair[
+      "kast6_meub_nr"
+    ].children[3].material = zwartMeub;
     //kast 4
-    meubilair["kast4_meub"].children[0].material = meubilair["kast4_meub_2"].children[0].material = meubilair["kast4_meub_1"].children[0].material = meubilair["kast4_meub_2_1"].children[0].material = meubilair["kast4_meub_laden"].children[0].material = meubilair["kast4_meub_1_laden"].children[0].material = meubilair["kast4_meub_2_laden"].children[0].material = meubilair["kast4_meub_2_1_laden"].children[0].material = bruinMeub;
-    meubilair["kast4_meub"].children[1].material = meubilair["kast4_meub_2"].children[1].material = meubilair["kast4_meub_1"].children[1].material = meubilair["kast4_meub_2_1"].children[1].material = witMeub;
-    meubilair["kast4_meub_laden"].children[1].material = meubilair["kast4_meub_2_laden"].children[1].material = meubilair["kast4_meub_1_laden"].children[1].material =  meubilair["kast4_meub_2_1_laden"].children[1].material = zwartMeub;
+    meubilair["kast4_meub"].children[0].material =
+      meubilair["kast4_meub_2"].children[0].material =
+      meubilair["kast4_meub_1"].children[0].material =
+      meubilair["kast4_meub_2_1"].children[0].material =
+      meubilair["kast4_meub_laden"].children[0].material =
+      meubilair["kast4_meub_1_laden"].children[0].material =
+      meubilair["kast4_meub_2_laden"].children[0].material =
+      meubilair["kast4_meub_2_1_laden"].children[0].material =
+        bruinMeub;
+    meubilair["kast4_meub"].children[1].material =
+      meubilair["kast4_meub_2"].children[1].material =
+      meubilair["kast4_meub_1"].children[1].material =
+      meubilair["kast4_meub_2_1"].children[1].material =
+        witMeub;
+    meubilair["kast4_meub_laden"].children[1].material =
+      meubilair["kast4_meub_2_laden"].children[1].material =
+      meubilair["kast4_meub_1_laden"].children[1].material =
+      meubilair["kast4_meub_2_1_laden"].children[1].material =
+        zwartMeub;
     //kast8 en 3
     meubilair["kast8_meub"].children[0].material = grijsMeub;
     meubilair["kast8_meub"].children[1].material = zwartMeub;
@@ -555,7 +636,7 @@ const afwerkingsNiveau = () => {
     meubilair["toilet_meub"].children[1].material = grijsMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = bruinMeub;
-    }
+  }
   // meubilair["kast6_meub_nr"].children[2].material = m3;
   //kast6_4
   meubilair["kast6_meub_4"].children[0].material = m1;
@@ -666,7 +747,7 @@ let plugs = {};
 let bool;
 let kot;
 //materiaal
-let zwartMeub,bruinMeub,granietZwart,grijsMeub,witMeub;
+let zwartMeub, bruinMeub, granietZwart, grijsMeub, witMeub;
 let quartz;
 const init = () => {
   for (const child of module.children) {
@@ -792,7 +873,7 @@ const init = () => {
         granietZwart = child.children[1].material;
         break;
       case "kast6_Meubilair_4":
-        meubilair["kast6_meub_4"] = child;        
+        meubilair["kast6_meub_4"] = child;
         break;
       case "kast6_Meubilair_NR":
         meubilair["kast6_meub_nr"] = child;
@@ -975,7 +1056,8 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
   }
 
   //add to main group
-  mModule.position.z = (-bboxLength /*/ 2 + 3.75*/ + brensjParams.inbetweenSpace) * nmbr;
+  mModule.position.z =
+    (-bboxLength /*/ 2 + 3.75*/ + brensjParams.inbetweenSpace) * nmbr;
   mModule.name = "module" + nmbr;
   cameraPosities[nmbr + 1] = new THREE.Vector3(
     (mModule.position.x - 5) * 0.1,
@@ -1126,7 +1208,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
           } else if (
             brensjParams.afwerking === "premium" ||
             brensjParams.afwerking === "high-end"
-          ) {            
+          ) {
             mdlgrp.add(verwarming["verwarming_premium_left"].clone());
           }
         }
@@ -1141,8 +1223,8 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         if (
           brensjParams.afwerking === "premium" ||
           brensjParams.afwerking === "high-end"
-        ) { 
-        mdlgrp.add(electronica["tablet1"].clone());
+        ) {
+          mdlgrp.add(electronica["tablet1"].clone());
         }
         mdlgrp.add(meubilair["tafel1"].clone());
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
@@ -1371,9 +1453,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         } else if (brensjParams.work === "live-care-3-rv") {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
-        if (brensjParams.afwerking ==="high-end") {
+        if (brensjParams.afwerking === "high-end") {
           mdlgrp.add(meubilair["kast6_meub_up"].clone());
-        }else{
+        } else {
           mdlgrp.add(meubilair["kast6_meub_up_2"].clone());
         }
         mdlgrp.add(meubilair["tafel1"].clone());
@@ -1421,11 +1503,11 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         } else if (brensjParams.work === "live-care-4-rv") {
           mdlgrp.add(meubilair["kast6_meub"].clone());
         }
-        if (brensjParams.afwerking ==="high-end") {
+        if (brensjParams.afwerking === "high-end") {
           mdlgrp.add(meubilair["kast6_meub_up"].clone());
-        }else{
+        } else {
           mdlgrp.add(meubilair["kast6_meub_up_2"].clone());
-        }        
+        }
         mdlgrp.add(meubilair["tafel1"].clone());
       } else if (mdlnmbr === 1) {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
@@ -1686,7 +1768,11 @@ let pos;
 let tar;
 let tar2;
 const changeCameraPosition = () => {
-  pos = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
+  pos = new THREE.Vector3(
+    camera.position.x,
+    camera.position.y,
+    camera.position.z
+  );
   if (brensjParams.camPos === 0) {
     if (!freeCam) {
       tar = new THREE.Vector3(
@@ -1705,7 +1791,7 @@ const changeCameraPosition = () => {
     );
     tar2 = new THREE.Vector3(0, 1.5, tar.z + 1.25);
     freeCam = false;
-    
+
     // const tweenTar = new TWEEN.Tween(tar).to(tar2, 1000);
     // tweenTar.onUpdate(function () {
     //   controls.target.set(tar2.x, tar2.y, tar2.z + 0.001);
@@ -1909,7 +1995,7 @@ const Overzicht = () => {
 //     if (group.children[i] instanceof THREE.Mesh) {
 //       if (group.children[i].geometry !== undefined) {
 //         group.children[i].geometry = BufferGeometryUtils.mergeVertices( group.children[i].geometry);
-//       }      
+//       }
 //     } else {
 //       indexGeometries(group.children[i]);
 //     }
@@ -2160,6 +2246,7 @@ const afwerkingPrijsBepaling = (dat) => {
  */
 const modWerken = document.getElementById("modWerken");
 const modWonen = document.getElementById("modWonen");
+jQuery(document).ready(function($){
 $(".btn-module-type").on("click", function () {
   var current = $(this).attr("id");
   if (current === "0") {
@@ -2213,6 +2300,7 @@ $(".afwerkingsniveau-container input").on("click", function () {
 //hidemenu
 $("#hideButton").on("click", function () {
   uiHide();
+});
 });
 //button to go back to module options
 const mainMenu = document.querySelector(".module-type-selection-container");
@@ -2293,7 +2381,12 @@ const checkArrayForElement = (child, array) => {
   }
 };
 /**debug */
-gui.add(brensjParams, "inbetweenSpace").min(0).max(100).step(0.001).onFinishChange(setWork);
+gui
+  .add(brensjParams, "inbetweenSpace")
+  .min(0)
+  .max(100)
+  .step(0.001)
+  .onFinishChange(setWork);
 
 // jQuery.post(ajax.url, data, function (response) {
 //   var return_response = new CustomEvent("server_response", {
