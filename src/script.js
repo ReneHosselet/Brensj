@@ -20,6 +20,7 @@ import {
   DracoMeshCompression,
 } from "@gltf-transform/extensions";
 import draco3d from "draco3d";
+import "@google/model-viewer";
 
 let composer, renderPass, exporter;
 let afwerkingModule;
