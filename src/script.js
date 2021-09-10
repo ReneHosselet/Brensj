@@ -156,59 +156,119 @@ const updateAllMaterials = () => {
 /*********************************************************************************************************************
  * export gltf
  */
-const link = document.createElement("a");
-link.style.display = "none";
-function exportGLTF(input) {
-  // indexGeometries(moduleGroup);
-  const gltfExporter = new GLTFExporter();
+document.getElementById("btnBestellen").addEventListener("click", () => {
+  // get the model which will be exported.
+  const brensj = scene.getObjectByName("modulegroup");
+
+  // export the scene to a GLB.
+  toGLTF(brensj);
+});
+
+/**
+ * Submit the form.
+ * @param {ArrayBuffer} data The exported data.
+ */
+const submit = (data) => {
+  // create a new FormData object, which will be used to send the data to the
+  // server.
+  const formData = new FormData();
+  formData.append("model", data);
+  formData.append("action", "brensj_upload_model");
+
+  // build options.
+  const options = {
+    type: "POST",
+    url: ajax.url,
+    contentType: false,
+    processData: false,
+    data: formData,
+    error: (err) => {
+      console.log("Something went wrong uploading the exported data.");
+      console.error(err);
+    },
+    success: (response) => {
+      console.log("SUCCESS");
+      console.log(response);
+    },
+  };
+
+  // perform request.
+  jQuery.ajax(options);
+};
+
+/**
+ * Export the scene to a GLTF.
+ * @param {THREE.Object3D} model The model to export.
+ */
+const toGLTF = (model) => {
+  const exporter = new GLTFExporter();
   const options = {
     trs: false,
     onlyVisible: true,
     truncateDrawRange: true,
     binary: true,
     forceIndices: true,
-    maxTextureSize: 1024 || Infinity, // To prevent NaN value
+    maxTextureSize: 1024 || Infinity, // to prevent NaN value
   };
-  gltfExporter.parse(
-    input,
-    function (result) {
-      //  const output = JSON.stringify(result, null, 2);
-      //  saveString(output, 'model.gltf');
-      // saveArrayBuffer(result,"brensj.glb");
+
+  exporter.parse(
+    model,
+    (result) => {
+      // compress the resulting arrayBuffer before saving.
       dracoCompress(result);
-      //  }, options);
     },
     options
   );
-}
-//  function saveString(text, filename) {
-//      save(new Blob([text], { type: 'text/plain' }), filename);
-//  }
-function saveArrayBuffer(buffer, filename) {
-  save(new Blob([buffer], { type: "application/octet-stream" }), filename);
-  // saveToAR(buffer, filename);
-  //  compressDraco(new Blob([buffer], { type: 'application/octet-stream' }), filename);
-}
-//locally downloads file in downlod folder
-function save(blob, filename) {
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  // URL.revokeObjectURL( url ); breaks Firefox...
-}
-//saves file on server and go to ar page
-function saveToAR(buffer, filename) {
-  const fs = require("browserify-fs");
-  const pathName = new URL(path);
-  console.log(pathName.pathname + filename);
-  fs.writeFile(pathName.pathname + filename, buffer, function (err) {
-    if (err) throw err;
-    console.log("Results Received");
-  });
-}
-document.getElementById("btnBestellen").addEventListener("click", function () {
-  exportGLTF(moduleGroup);
-});
+};
+// const link = document.createElement("a");
+// link.style.display = "none";
+// function exportGLTF(input) {
+//   // indexGeometries(moduleGroup);
+//   const gltfExporter = new GLTFExporter();
+//   const options = {
+//     trs: false,
+//     onlyVisible: true,
+//     truncateDrawRange: true,
+//     binary: true,
+//     forceIndices: true,
+//     maxTextureSize: 1024 || Infinity, // To prevent NaN value
+//   };
+//   gltfExporter.parse(
+//     input,
+//     function (result) {
+//       //  const output = JSON.stringify(result, null, 2);
+//       //  saveString(output, 'model.gltf');
+//       // saveArrayBuffer(result,"brensj.glb");
+//       dracoCompress(result);
+//       //  }, options);
+//     },
+//     options
+//   );
+// }
+// //  function saveString(text, filename) {
+// //      save(new Blob([text], { type: 'text/plain' }), filename);
+// //  }
+
+// //locally downloads file in downlod folder
+// function save(blob, filename) {
+//   link.href = URL.createObjectURL(blob);
+//   link.download = filename;
+//   link.click();
+//   // URL.revokeObjectURL( url ); breaks Firefox...
+// }
+// //saves file on server and go to ar page
+// function saveToAR(buffer, filename) {
+//   const fs = require("browserify-fs");
+//   const pathName = new URL(path);
+//   console.log(pathName.pathname + filename);
+//   fs.writeFile(pathName.pathname + filename, buffer, function (err) {
+//     if (err) throw err;
+//     console.log("Results Received");
+//   });
+// }
+// document.getElementById("btnBestellen").addEventListener("click", function () {
+//   exportGLTF(moduleGroup);
+// });
 /**
  * export draco compression
  */
@@ -218,6 +278,7 @@ async function dracoCompress(arrayBuffer) {
     .registerDependencies({
       "draco3d.encoder": await draco3d.createEncoderModule(),
     });
+
   const document = io.readBinary(arrayBuffer); // read GLB from ArrayBuffer
   document
     .createExtension(DracoMeshCompression)
@@ -226,8 +287,14 @@ async function dracoCompress(arrayBuffer) {
       method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
       encodeSpeed: 5,
     });
+
   const compressedArrayBuffer = io.writeBinary(document); // write GLB to ArrayBuffer
-  saveArrayBuffer(compressedArrayBuffer, "brensj.glb");
+  const blob = new Blob([compressedArrayBuffer], {
+    type: "application/octet-stream",
+  });
+
+  // submit data to backend.
+  submit(blob);
 }
 
 /***********************************************************************************************************************************
@@ -2246,61 +2313,61 @@ const afwerkingPrijsBepaling = (dat) => {
  */
 const modWerken = document.getElementById("modWerken");
 const modWonen = document.getElementById("modWonen");
-jQuery(document).ready(function($){
-$(".btn-module-type").on("click", function () {
-  var current = $(this).attr("id");
-  if (current === "0") {
-    brensjParams.work = "work-1";
-    brensjParams.modules = 1;
-    modWerken.style.display = "none";
-    modWonen.style.display = "";
-  } else if (current === "1") {
-    brensjParams.work = "live-care-3";
-    brensjParams.modules = 3;
-    modWerken.style.display = "";
-    modWonen.style.display = "none";
-  }
-  price.innerHTML = "0,00";
-  setWork();
-});
+jQuery(document).ready(function ($) {
+  $(".btn-module-type").on("click", function () {
+    var current = $(this).attr("id");
+    if (current === "0") {
+      brensjParams.work = "work-1";
+      brensjParams.modules = 1;
+      modWerken.style.display = "none";
+      modWonen.style.display = "";
+    } else if (current === "1") {
+      brensjParams.work = "live-care-3";
+      brensjParams.modules = 3;
+      modWerken.style.display = "";
+      modWonen.style.display = "none";
+    }
+    price.innerHTML = "0,00";
+    setWork();
+  });
 
-$(".modules-wonen input").on("click", function () {
-  var current = $(this).attr("id");
-  brensjParams.work = current;
-  brensjParams.modules = parseInt(current.substring(5, 6));
-  setWork();
-});
-$(".modules-werken input").on("click", function () {
-  var current = $(this).attr("id");
-  brensjParams.work = current;
-  brensjParams.modules = parseInt(current.substring(10, 11));
-  setWork();
-});
-//buitenafwerking
-$(".container-dubbel input").on("click", function () {
-  var current = $(this).attr("id");
-  setMaterial(current, "gevel");
-});
-//binnenafwerking
-$(".container-enkel input").on("click", function () {
-  var current = $(this).attr("id");
-  setMaterial(current, "binnen");
-});
-//vloer
-$(".vloerawerking-container input").on("click", function () {
-  var current = $(this).attr("id");
-  setMaterial(current, "vloer");
-});
-//afwerking
-$(".afwerkingsniveau-container input").on("click", function () {
-  var current = $(this).attr("id");
-  brensjParams.afwerking = current;
-  afwerkingsNiveau();
-});
-//hidemenu
-$("#hideButton").on("click", function () {
-  uiHide();
-});
+  $(".modules-wonen input").on("click", function () {
+    var current = $(this).attr("id");
+    brensjParams.work = current;
+    brensjParams.modules = parseInt(current.substring(5, 6));
+    setWork();
+  });
+  $(".modules-werken input").on("click", function () {
+    var current = $(this).attr("id");
+    brensjParams.work = current;
+    brensjParams.modules = parseInt(current.substring(10, 11));
+    setWork();
+  });
+  //buitenafwerking
+  $(".container-dubbel input").on("click", function () {
+    var current = $(this).attr("id");
+    setMaterial(current, "gevel");
+  });
+  //binnenafwerking
+  $(".container-enkel input").on("click", function () {
+    var current = $(this).attr("id");
+    setMaterial(current, "binnen");
+  });
+  //vloer
+  $(".vloerawerking-container input").on("click", function () {
+    var current = $(this).attr("id");
+    setMaterial(current, "vloer");
+  });
+  //afwerking
+  $(".afwerkingsniveau-container input").on("click", function () {
+    var current = $(this).attr("id");
+    brensjParams.afwerking = current;
+    afwerkingsNiveau();
+  });
+  //hidemenu
+  $("#hideButton").on("click", function () {
+    uiHide();
+  });
 });
 //button to go back to module options
 const mainMenu = document.querySelector(".module-type-selection-container");
