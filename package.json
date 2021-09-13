@@ -10,6 +10,7 @@
     "@babel/preset-env": "^7.14.2",
     "@gltf-transform/core": "^0.12.10",
     "@gltf-transform/extensions": "^0.12.10",
+    "@google/model-viewer": "^1.8.0",
     "@tweenjs/tween.js": "^18.6.4",
     "assert": "^2.0.0",
     "babel-loader": "^8.2.2",
