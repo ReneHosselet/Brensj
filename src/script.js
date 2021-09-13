@@ -221,55 +221,7 @@ const toGLTF = (model) => {
     options
   );
 };
-// const link = document.createElement("a");
-// link.style.display = "none";
-// function exportGLTF(input) {
-//   // indexGeometries(moduleGroup);
-//   const gltfExporter = new GLTFExporter();
-//   const options = {
-//     trs: false,
-//     onlyVisible: true,
-//     truncateDrawRange: true,
-//     binary: true,
-//     forceIndices: true,
-//     maxTextureSize: 1024 || Infinity, // To prevent NaN value
-//   };
-//   gltfExporter.parse(
-//     input,
-//     function (result) {
-//       //  const output = JSON.stringify(result, null, 2);
-//       //  saveString(output, 'model.gltf');
-//       // saveArrayBuffer(result,"brensj.glb");
-//       dracoCompress(result);
-//       //  }, options);
-//     },
-//     options
-//   );
-// }
-// //  function saveString(text, filename) {
-// //      save(new Blob([text], { type: 'text/plain' }), filename);
-// //  }
 
-// //locally downloads file in downlod folder
-// function save(blob, filename) {
-//   link.href = URL.createObjectURL(blob);
-//   link.download = filename;
-//   link.click();
-//   // URL.revokeObjectURL( url ); breaks Firefox...
-// }
-// //saves file on server and go to ar page
-// function saveToAR(buffer, filename) {
-//   const fs = require("browserify-fs");
-//   const pathName = new URL(path);
-//   console.log(pathName.pathname + filename);
-//   fs.writeFile(pathName.pathname + filename, buffer, function (err) {
-//     if (err) throw err;
-//     console.log("Results Received");
-//   });
-// }
-// document.getElementById("btnBestellen").addEventListener("click", function () {
-//   exportGLTF(moduleGroup);
-// });
 /**
  * export draco compression
  */
@@ -1136,6 +1088,7 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
   moduleGroup.add(mModule);
   // console.log(moduleGroup);
 };
+
 const muurOpvullling = (fmO, bmO, mModule) => {
   let results = [];
   let wall = binnenAfwerking["binnengevel_back"].clone();
@@ -1675,11 +1628,16 @@ const cutOutWalls = (objct, result, result1, mdlgrp, wallPos) => {
   meshB.updateMatrix();
   //subtract and add
   mdlgrp.add(obj);
+
   const results = [];
   result = CSG.subtract(result, meshB);
   result1 = CSG.subtract(result1, meshB);
-  // result = BufferGeometryUtils.mergeVertices(result);
-  // result1 = BufferGeometryUtils.mergeVertices(result1);
+
+  // since CSG returns a non-indexed geometry, we use mergeVertices to make it
+  // indexed, so the model can be viewed in AR.
+  result.geometry = BufferGeometryUtils.mergeVertices(result.geometry);
+  result1.geometry = BufferGeometryUtils.mergeVertices(result1.geometry);
+
   results.push(result);
   results.push(result1);
   if (name === "binnengevel_back") {
