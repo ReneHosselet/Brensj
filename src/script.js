@@ -34,11 +34,14 @@ let data_binnen;
 let data_vloer;
 let data_afwerking;
 function fetchJsonData() {
-  data_module = JSON.parse(brensj_posts.data_mod);
-  data_gevel = JSON.parse(brensj_posts.data_gev);
-  data_binnen = JSON.parse(brensj_posts.data_bnn);
-  data_vloer = JSON.parse(brensj_posts.data_vlr);
-  data_afwerking = JSON.parse(brensj_posts.data_afw);
+  if (brensj_posts !== undefined) {
+    data_module = JSON.parse(brensj_posts.data_mod);
+    data_gevel = JSON.parse(brensj_posts.data_gev);
+    data_binnen = JSON.parse(brensj_posts.data_bnn);
+    data_vloer = JSON.parse(brensj_posts.data_vlr);
+    data_afwerking = JSON.parse(brensj_posts.data_afw);
+  }else{
+  }  
 }
 fetchJsonData();
 
@@ -168,13 +171,33 @@ document.getElementById("btnBestellen").addEventListener("click", () => {
  * Submit the form.
  * @param {ArrayBuffer} data The exported data.
  */
+ let pdfcanvas = document.createElement('canvas');  
 const submit = (data) => {
   // create a new FormData object, which will be used to send the data to the
-  // server.
+  // server.  
+  exportImg(data)  
+};
+async function exportImg(data) {
+  let width_img = window.innerWidth;
+  let height_img = window.innerHeight;
+ 
+  pdfcanvas.width = width_img;
+  pdfcanvas.height = height_img;
+ 
+  let img0 = new Image();
+  renderer.render(scene, camera);
+  img0.src = renderer.domElement.toDataURL('image/jpeg', 1.0);
+ 
+  await loadImage(img0);
+ 
+  let photoContext = pdfcanvas.getContext('2d');
+  photoContext.drawImage(img0, 0, 0, width_img, height_img);
+  let imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
+
   const formData = new FormData();
   formData.append("model", data);
   formData.append("action", "brensj_upload_model");
-
+  formData.append("image",imgURL);
   // build options.
   const options = {
     type: "POST",
@@ -191,11 +214,16 @@ const submit = (data) => {
       console.log(response);
     },
   };
-
   // perform request.
   jQuery.ajax(options);
+}
+function loadImage(img0) {
+  return new Promise((resolve, reject) => {
+      img0.onload = function () {
+          resolve();
+      };
+  });
 };
-
 /**
  * Export the scene to a GLTF.
  * @param {THREE.Object3D} model The model to export.
@@ -2254,6 +2282,9 @@ const afwerkingPrijsBepaling = (dat) => {
   }
   Overzicht();
 };
+/*********************************************************************************************************************************
+ * 
+ */
 /***************************************************************************************************************************************************************************************
  * eventlisteners
  */
