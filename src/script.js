@@ -1,7 +1,6 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
 import * as dat from "dat.gui";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -2015,18 +2014,6 @@ const Overzicht = () => {
     step5PriceSide.appendChild(priceSpan);
   }
 };
-//make all geometries indexed
-// const indexGeometries = (group) =>{
-//   for (var i = group.children.length - 1; i >= 0; i--) {
-//     if (group.children[i] instanceof THREE.Mesh) {
-//       if (group.children[i].geometry !== undefined) {
-//         group.children[i].geometry = BufferGeometryUtils.mergeVertices( group.children[i].geometry);
-//       }
-//     } else {
-//       indexGeometries(group.children[i]);
-//     }
-//   }
-// }
 /*********************************************************************************************************************************************************************************
  * prijs bepalingen
  */
