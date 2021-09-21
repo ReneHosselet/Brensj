@@ -178,21 +178,21 @@ const submit = (data) => {
   exportImg(data)  
 };
 async function exportImg(data) {
-  let width_img = window.innerWidth;
-  let height_img = window.innerHeight;
+  // let width_img = window.innerWidth;
+  // let height_img = window.innerHeight;
  
-  pdfcanvas.width = width_img;
-  pdfcanvas.height = height_img;
+  // pdfcanvas.width = width_img;
+  // pdfcanvas.height = height_img;
  
-  let img0 = new Image();
+  // let img0 = new Image();
   renderer.render(scene, camera);
-  img0.src = renderer.domElement.toDataURL('image/jpeg', 1.0);
+  let imgURL = renderer.domElement.toDataURL('image/jpeg', 1.0);
  
-  await loadImage(img0);
+  // await loadImage(img0);
  
-  let photoContext = pdfcanvas.getContext('2d');
-  photoContext.drawImage(img0, 0, 0, width_img, height_img);
-  let imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
+  // let photoContext = pdfcanvas.getContext('2d');
+  // photoContext.drawImage(img0, 0, 0, width_img, height_img);
+  // imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
 
   const formData = new FormData();
   formData.append("model", data);
