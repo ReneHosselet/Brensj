@@ -172,16 +172,16 @@ document.getElementById("btnBestellen").addEventListener("click", () => {
  * @param {ArrayBuffer} data The exported data.
  */
  let pdfcanvas = document.createElement('canvas');  
+ document.body.append(pdfcanvas)
 const submit = (data) => {
   // create a new FormData object, which will be used to send the data to the
   // server.  
   exportImg(data)  
 };
-async function exportImg(data) {
-  sizes.width = window.innerWidth;
-  camera.aspect = sizes.width / sizes.height;
+function exportImg(data) {
+  camera.aspect = 350 / 250;
   camera.updateProjectionMatrix();
-  renderer.setSize(sizes.width, sizes.height);
+  renderer.setSize(350, 250);
   // let width_img = window.innerWidth;
   // let height_img = window.innerHeight;
  
@@ -220,11 +220,7 @@ async function exportImg(data) {
   };
   // perform request.
   jQuery.ajax(options);
-
-  sizes.width = window.innerWidth/2;
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(sizes.width, sizes.height);
+  uiHide();
 }
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
