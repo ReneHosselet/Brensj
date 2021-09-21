@@ -171,17 +171,16 @@ document.getElementById("btnBestellen").addEventListener("click", () => {
  * Submit the form.
  * @param {ArrayBuffer} data The exported data.
  */
- let pdfcanvas = document.createElement('canvas');  
- document.body.append(pdfcanvas)
+ let pdfcanvas = document.createElement('canvas');
 const submit = (data) => {
   // create a new FormData object, which will be used to send the data to the
   // server.  
   exportImg(data)  
 };
 function exportImg(data) {
-  camera.aspect = 350 / 250;
+  camera.aspect = 700 / 500;
   camera.updateProjectionMatrix();
-  renderer.setSize(350, 250);
+  renderer.setSize(700, 500);
   // let width_img = window.innerWidth;
   // let height_img = window.innerHeight;
  
