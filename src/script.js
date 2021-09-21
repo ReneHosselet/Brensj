@@ -178,7 +178,10 @@ const submit = (data) => {
   exportImg(data)  
 };
 async function exportImg(data) {
-  uiHide();
+  sizes.width = window.innerWidth;
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(sizes.width, sizes.height);
   // let width_img = window.innerWidth;
   // let height_img = window.innerHeight;
  
@@ -217,7 +220,11 @@ async function exportImg(data) {
   };
   // perform request.
   jQuery.ajax(options);
-  uiHide();
+
+  sizes.width = window.innerWidth/2;
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(sizes.width, sizes.height);
 }
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
