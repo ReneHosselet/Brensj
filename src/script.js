@@ -178,6 +178,7 @@ const submit = (data) => {
   exportImg(data)  
 };
 async function exportImg(data) {
+  uiHide();
   // let width_img = window.innerWidth;
   // let height_img = window.innerHeight;
  
@@ -216,6 +217,7 @@ async function exportImg(data) {
   };
   // perform request.
   jQuery.ajax(options);
+  uiHide();
 }
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
