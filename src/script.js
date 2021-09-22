@@ -778,7 +778,7 @@ const brensjParams = {
   afwerking: "cosy",
   camPos: 0,
   moduleID: 1951,
-  inbetweenSpace: 15.8,
+  inbetweenSpace: 5.95,
 };
 /**
  * module init
@@ -1162,7 +1162,7 @@ const muurOpvullling = (fmO, bmO, mModule) => {
     } else {
       const back = frameOpvulling[bmO].clone();
       back.applyMatrix4(new THREE.Matrix4().makeScale(1, 1, -1));
-      back.position.z = bbox.min.z / 2 - 6.6;
+      back.position.z = bbox.min.z + 4;
       mModule.add(back);
     }
   }
@@ -1293,9 +1293,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
       if (mdlnmbr === 1) {
         //mid module
         // //2nd window
-        results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
-        result = results[0];
-        result1 = results[1];
+        // results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
+        // result = results[0];
+        // result1 = results[1];
         results = cutOutWalls(sidemodel, result, result1, mdlgrp, 3);
         result = results[0];
         result1 = results[1];
@@ -1322,7 +1322,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         if (brensjParams.work === "work-3a") {
           mdlgrp.add(meubilair["tafel1"].clone());
           const tussenscheiding = frameOpvulling["fwindow1"].clone();
-          tussenscheiding.position.z = bbox.min.z / 2 - 6.6;
+          tussenscheiding.position.z = bbox.min.z + 4;
           mdlgrp.add(tussenscheiding.clone());
           mdlgrp.add(meubilair["kast2_meub"].clone());
         } else if (brensjParams.work === "work-3b") {
@@ -1431,9 +1431,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         }
       } else if (mdlnmbr === 2) {
         //windows
-        results = cutOutWalls(sidemodel, result, result1, mdlgrp, 6);
-        result = results[0];
-        result1 = results[1];
+        // results = cutOutWalls(sidemodel, result, result1, mdlgrp, 6);
+        // result = results[0];
+        // result1 = results[1];
         results = cutOutWalls(sidemodel, result, result1, mdlgrp, 4);
         result = results[0];
         result1 = results[1];
@@ -1693,7 +1693,11 @@ const cleanup = (obj) => {
       cleanup(obj.children[i]);
     }
   }
-  obj.parent.remove(obj);
+  if (obj !== null) {
+    if (obj.parent !== null) {
+      obj.parent.remove(obj);
+    }    
+  }  
 };
 const setWork = () => {
   const backGevel = "b" + brensjParams.gevel;
