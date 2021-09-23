@@ -115,8 +115,7 @@ function get_cookie(name) {
   return "";
 }
 
-const path =
-  "https://brensjconfig.fluxwebdesign8.be/wp-content/themes/flux-child/configurator/";
+const path = `${window.location}wp-content/themes/flux-child/configurator/`;
 // const path = "";
 /**
  * loadingmanager
@@ -287,8 +286,10 @@ function exportImg(data) {
       console.error(err);
     },
     success: (response) => {
-      console.log("SUCCESS");
-      console.log(response);
+      // console.log(response);
+
+      // redirect user to pdf view.
+      window.location = `${window.location}offerte/?configuration_id=${configuration_id}`;
     },
   };
   // perform request.
