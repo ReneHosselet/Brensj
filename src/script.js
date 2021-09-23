@@ -237,6 +237,8 @@ btnBestellen.addEventListener("click", () => {
  */
 let pdfcanvas = document.createElement("canvas");
 const submit = (data) => {
+  // create a new FormData object, which will be used to send the data to the
+  // server.
   exportImg(data);
 };
 function exportImg(data) {
@@ -2424,7 +2426,7 @@ const mainMenuBtn = document.getElementById("mainMenuBtn");
 if (mainMenu !== null) {
   mainMenuBtn.addEventListener("click", () => {
     mainMenu.style.display = "";
-    updateStep(1);
+    updateStep(1); 
   });
 }
 //add camera buttons
