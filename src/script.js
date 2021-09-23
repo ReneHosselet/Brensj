@@ -40,8 +40,8 @@ function fetchJsonData() {
     data_binnen = JSON.parse(brensj_posts.data_bnn);
     data_vloer = JSON.parse(brensj_posts.data_vlr);
     data_afwerking = JSON.parse(brensj_posts.data_afw);
-  }else{
-  }  
+  } else {
+  }
 }
 fetchJsonData();
 
@@ -171,11 +171,11 @@ document.getElementById("btnBestellen").addEventListener("click", () => {
  * Submit the form.
  * @param {ArrayBuffer} data The exported data.
  */
- let pdfcanvas = document.createElement('canvas');
+let pdfcanvas = document.createElement("canvas");
 const submit = (data) => {
   // create a new FormData object, which will be used to send the data to the
-  // server.  
-  exportImg(data)  
+  // server.
+  exportImg(data);
 };
 function exportImg(data) {
   camera.aspect = 700 / 500;
@@ -183,16 +183,16 @@ function exportImg(data) {
   renderer.setSize(700, 500);
   // let width_img = window.innerWidth;
   // let height_img = window.innerHeight;
- 
+
   // pdfcanvas.width = width_img;
   // pdfcanvas.height = height_img;
- 
+
   // let img0 = new Image();
   renderer.render(scene, camera);
-  let imgURL = renderer.domElement.toDataURL('image/jpeg', 1.0);
- 
+  let imgURL = renderer.domElement.toDataURL("image/jpeg", 1.0);
+
   // await loadImage(img0);
- 
+
   // let photoContext = pdfcanvas.getContext('2d');
   // photoContext.drawImage(img0, 0, 0, width_img, height_img);
   // imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
@@ -200,7 +200,7 @@ function exportImg(data) {
   const formData = new FormData();
   formData.append("model", data);
   formData.append("action", "brensj_upload_model");
-  formData.append("image",imgURL);
+  formData.append("image", imgURL);
   // build options.
   const options = {
     type: "POST",
@@ -223,11 +223,11 @@ function exportImg(data) {
 }
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
-      img0.onload = function () {
-          resolve();
-      };
+    img0.onload = function () {
+      resolve();
+    };
   });
-};
+}
 /**
  * Export the scene to a GLTF.
  * @param {THREE.Object3D} model The model to export.
@@ -1293,9 +1293,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
       if (mdlnmbr === 1) {
         //mid module
         // //2nd window
-        // results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
-        // result = results[0];
-        // result1 = results[1];
+        results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
+        result = results[0];
+        result1 = results[1];
         results = cutOutWalls(sidemodel, result, result1, mdlgrp, 3);
         result = results[0];
         result1 = results[1];
@@ -1431,9 +1431,9 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         }
       } else if (mdlnmbr === 2) {
         //windows
-        // results = cutOutWalls(sidemodel, result, result1, mdlgrp, 6);
-        // result = results[0];
-        // result1 = results[1];
+        results = cutOutWalls(sidemodel, result, result1, mdlgrp, 6);
+        result = results[0];
+        result1 = results[1];
         results = cutOutWalls(sidemodel, result, result1, mdlgrp, 4);
         result = results[0];
         result1 = results[1];
@@ -1605,6 +1605,10 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
     }
   }
   //add to group
+  // since CSG returns a non-indexed geometry, we use mergeVertices to make it
+  // indexed, so the model can be viewed in AR.
+  result.geometry = BufferGeometryUtils.mergeVertices(result.geometry);
+  result1.geometry = BufferGeometryUtils.mergeVertices(result1.geometry);
   mdlgrp.add(result);
   mdlgrp.add(result1);
 };
@@ -1664,11 +1668,6 @@ const cutOutWalls = (objct, result, result1, mdlgrp, wallPos) => {
   result = CSG.subtract(result, meshB);
   result1 = CSG.subtract(result1, meshB);
 
-  // since CSG returns a non-indexed geometry, we use mergeVertices to make it
-  // indexed, so the model can be viewed in AR.
-  result.geometry = BufferGeometryUtils.mergeVertices(result.geometry);
-  result1.geometry = BufferGeometryUtils.mergeVertices(result1.geometry);
-
   results.push(result);
   results.push(result1);
   if (name === "binnengevel_back") {
@@ -1696,8 +1695,8 @@ const cleanup = (obj) => {
   if (obj !== null) {
     if (obj.parent !== null) {
       obj.parent.remove(obj);
-    }    
-  }  
+    }
+  }
 };
 const setWork = () => {
   const backGevel = "b" + brensjParams.gevel;
@@ -2291,7 +2290,7 @@ const afwerkingPrijsBepaling = (dat) => {
   Overzicht();
 };
 /*********************************************************************************************************************************
- * 
+ *
  */
 /***************************************************************************************************************************************************************************************
  * eventlisteners
@@ -2360,6 +2359,7 @@ const mainMenuBtn = document.getElementById("mainMenuBtn");
 if (mainMenu !== null) {
   mainMenuBtn.addEventListener("click", () => {
     mainMenu.style.display = "";
+    updateStep(1); 
   });
 }
 //add camera buttons
