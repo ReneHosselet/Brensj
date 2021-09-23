@@ -23,6 +23,14 @@ import "@google/model-viewer";
 
 let composer, renderPass, exporter;
 let afwerkingModule;
+
+const btnBestellen = document.getElementById("btnBestellen");
+
+/**
+ * The ID of the configuration which was created, after form submit.
+ */
+let configuration_id = null;
+
 //TWEEN
 var TWEEN = require("@tweenjs/tween.js");
 /**
@@ -44,6 +52,59 @@ function fetchJsonData() {
   }
 }
 fetchJsonData();
+
+/**
+ * Check if cookies have been changed.
+ *
+ * @returns {function} Closure function which checks the cookies.
+ */
+const checkCookies = (function () {
+  // since this is a closure, lastCookies will remain the same.
+  let lastCookies = document.cookie;
+
+  return function () {
+    let currentCookies = document.cookie;
+
+    // the cookies have been changed.
+    if (currentCookies !== lastCookies) {
+      console.log("<< COOKIES HAVE CHANGED >>");
+
+      const cookie_value = get_cookie("configuration_id");
+      const cookie_exists = cookie_value ? true : false;
+
+      // set the configuration id, so we can send it to the server along with
+      // the model and enable the submit button.
+      configuration_id = cookie_exists ? cookie_value : null;
+      btnBestellen.disabled = !cookie_exists;
+
+      console.log("<< CONFIG ID is: " + configuration_id + ">>");
+
+      // update cookies.
+      lastCookies = currentCookies;
+
+      console.log("<< COOKIES ARE NOW: " + lastCookies + " >>");
+    } else {
+      console.log("cookies remain unchanged");
+    }
+  };
+})(); // execute immediately.
+
+// check the cookies every half second.
+window.setInterval(checkCookies, 500);
+
+/**
+ * Get the value of a cookie.
+ */
+function get_cookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (parts.length === 2) {
+    return parts.pop().split(";").shift();
+  }
+
+  return "";
+}
 
 const path =
   "https://brensjconfig.fluxwebdesign8.be/wp-content/themes/flux-child/configurator/";
@@ -159,11 +220,14 @@ const updateAllMaterials = () => {
 /*********************************************************************************************************************
  * export gltf
  */
-document.getElementById("btnBestellen").addEventListener("click", () => {
-  // get the model which will be exported.
-  const brensj = scene.getObjectByName("modulegroup");
+btnBestellen.addEventListener("click", () => {
+  // only export the model if a configuration id was set.
+  if (!configuration_id) {
+    return;
+  }
 
-  // export the scene to a GLB.
+  // get the model which will be exported and export the scene to a GLB.
+  const brensj = scene.getObjectByName("modulegroup");
   toGLTF(brensj);
 });
 
@@ -173,8 +237,6 @@ document.getElementById("btnBestellen").addEventListener("click", () => {
  */
 let pdfcanvas = document.createElement("canvas");
 const submit = (data) => {
-  // create a new FormData object, which will be used to send the data to the
-  // server.
   exportImg(data);
 };
 function exportImg(data) {
@@ -197,8 +259,11 @@ function exportImg(data) {
   // photoContext.drawImage(img0, 0, 0, width_img, height_img);
   // imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
 
+  // create a new FormData object, which will be used to send the data to the
+  // server.
   const formData = new FormData();
   formData.append("model", data);
+  formData.append("configuration_id", configuration_id);
   formData.append("action", "brensj_upload_model");
   formData.append("image", imgURL);
   // build options.
@@ -2359,7 +2424,7 @@ const mainMenuBtn = document.getElementById("mainMenuBtn");
 if (mainMenu !== null) {
   mainMenuBtn.addEventListener("click", () => {
     mainMenu.style.display = "";
-    updateStep(1); 
+    updateStep(1);
   });
 }
 //add camera buttons
