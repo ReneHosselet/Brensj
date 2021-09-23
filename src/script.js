@@ -228,11 +228,15 @@ const updateAllMaterials = () => {
 /*********************************************************************************************************************
  * export gltf
  */
-btnBestellen.addEventListener("click", () => {
+btnBestellen.addEventListener("click", (e) => {
   // only export the model if a configuration id was set.
   if (!configuration_id) {
     return;
   }
+
+  // disable the button, so we can't submit multiple times.
+  e.target.classList.remove("btn-active");
+  e.target.classList.add("btn-disabled");
 
   // get the model which will be exported and export the scene to a GLB.
   const brensj = scene.getObjectByName("modulegroup");
@@ -247,6 +251,7 @@ let pdfcanvas = document.createElement("canvas");
 const submit = (data) => {
   exportImg(data);
 };
+
 function exportImg(data) {
   camera.aspect = 700 / 500;
   camera.updateProjectionMatrix();
@@ -274,6 +279,7 @@ function exportImg(data) {
   formData.append("configuration_id", configuration_id);
   formData.append("action", "brensj_upload_model");
   formData.append("image", imgURL);
+
   // build options.
   const options = {
     type: "POST",
@@ -284,6 +290,10 @@ function exportImg(data) {
     error: (err) => {
       console.log("Something went wrong uploading the exported data.");
       console.error(err);
+
+      // something went wrong, re-enable the button.
+      btnBestellen.classList.add("btn-active");
+      btnBestellen.classList.remove("btn-disabled");
     },
     success: (response) => {
       // console.log(response);
@@ -292,10 +302,13 @@ function exportImg(data) {
       window.location = `${window.location}offerte/?configuration_id=${configuration_id}`;
     },
   };
+
   // perform request.
   jQuery.ajax(options);
+
   uiHide();
 }
+
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
     img0.onload = function () {
