@@ -65,27 +65,36 @@ const checkCookies = (function () {
   return function () {
     let currentCookies = document.cookie;
 
-    // the cookies have been changed.
-    if (currentCookies !== lastCookies) {
-      console.log("<< COOKIES HAVE CHANGED >>");
-
-      const cookie_value = get_cookie("configuration_id");
-      const cookie_exists = cookie_value ? true : false;
-
-      // set the configuration id, so we can send it to the server along with
-      // the model and enable the submit button.
-      configuration_id = cookie_exists ? cookie_value : null;
-      btnBestellen.disabled = !cookie_exists;
-
-      console.log("<< CONFIG ID is: " + configuration_id + ">>");
-
-      // update cookies.
-      lastCookies = currentCookies;
-
-      console.log("<< COOKIES ARE NOW: " + lastCookies + " >>");
-    } else {
+    // don't do anything if the cookies haven't changed.
+    if (currentCookies === lastCookies) {
       console.log("cookies remain unchanged");
+      return;
     }
+
+    console.log("<< COOKIES HAVE CHANGED >>");
+
+    const cookie_value = get_cookie("configuration_id");
+    const cookie_exists = cookie_value ? true : false;
+
+    // set the configuration id, so we can send it to the server along with
+    // the model and enable the submit button.
+    configuration_id = cookie_exists ? cookie_value : null;
+    btnBestellen.disabled = !cookie_exists;
+
+    // make sure to update the classNames on the button so styling can be updated
+    // when needed.
+    const addClass = cookie_exists ? "btn-active" : "btn-disabled";
+    const removeClass = cookie_exists ? "btn-disabled" : "btn-active";
+
+    btnBestellen.classList.add(addClass);
+    btnBestellen.classList.remove(removeClass);
+
+    console.log("<< CONFIG ID is: " + configuration_id + ">>");
+
+    // update cookies.
+    lastCookies = currentCookies;
+
+    console.log("<< COOKIES ARE NOW: " + lastCookies + " >>");
   };
 })(); // execute immediately.
 
@@ -106,8 +115,7 @@ function get_cookie(name) {
   return "";
 }
 
-const path =
-  "https://brensjconfig.fluxwebdesign8.be/wp-content/themes/flux-child/configurator/";
+const path = `${window.location}wp-content/themes/flux-child/configurator/`;
 // const path = "";
 /**
  * loadingmanager
@@ -220,11 +228,15 @@ const updateAllMaterials = () => {
 /*********************************************************************************************************************
  * export gltf
  */
-btnBestellen.addEventListener("click", () => {
+btnBestellen.addEventListener("click", (e) => {
   // only export the model if a configuration id was set.
   if (!configuration_id) {
     return;
   }
+
+  // disable the button, so we can't submit multiple times.
+  e.target.classList.remove("btn-active");
+  e.target.classList.add("btn-disabled");
 
   // get the model which will be exported and export the scene to a GLB.
   const brensj = scene.getObjectByName("modulegroup");
@@ -241,6 +253,7 @@ const submit = (data) => {
   // server.
   exportImg(data);
 };
+
 function exportImg(data) {
   camera.aspect = 700 / 500;
   camera.updateProjectionMatrix();
@@ -268,6 +281,7 @@ function exportImg(data) {
   formData.append("configuration_id", configuration_id);
   formData.append("action", "brensj_upload_model");
   formData.append("image", imgURL);
+
   // build options.
   const options = {
     type: "POST",
@@ -278,16 +292,25 @@ function exportImg(data) {
     error: (err) => {
       console.log("Something went wrong uploading the exported data.");
       console.error(err);
+
+      // something went wrong, re-enable the button.
+      btnBestellen.classList.add("btn-active");
+      btnBestellen.classList.remove("btn-disabled");
     },
     success: (response) => {
-      console.log("SUCCESS");
-      console.log(response);
+      // console.log(response);
+
+      // redirect user to pdf view.
+      window.location = `${window.location}offerte/?configuration_id=${configuration_id}`;
     },
   };
+
   // perform request.
   jQuery.ajax(options);
+
   uiHide();
 }
+
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
     img0.onload = function () {
