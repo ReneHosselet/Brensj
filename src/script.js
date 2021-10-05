@@ -114,7 +114,6 @@ function get_cookie(name) {
 
   return "";
 }
-
 const path = `${window.location}wp-content/themes/flux-child/configurator/`;
 // const path = "";
 /**
@@ -130,7 +129,7 @@ const loadingManager = new THREE.LoadingManager(
     loadingScreen.addEventListener("transitionend", onTransitionEnd);
   },
   (itemUrl, itemsLoaded, itemsTotal) => {
-    console.log(itemsLoaded + " / " + itemsTotal);
+    // console.log(itemsLoaded + " / " + itemsTotal);
     // const progressRatio = itemsLoaded / itemsTotal;
     const progressRatio = itemsLoaded / 28;
     loadingbartext.innerHTML = Math.floor(progressRatio * 100) + "%";
@@ -233,11 +232,9 @@ btnBestellen.addEventListener("click", (e) => {
   if (!configuration_id) {
     return;
   }
-
   // disable the button, so we can't submit multiple times.
   e.target.classList.remove("btn-active");
   e.target.classList.add("btn-disabled");
-
   // get the model which will be exported and export the scene to a GLB.
   const brensj = scene.getObjectByName("modulegroup");
   toGLTF(brensj);
@@ -253,35 +250,40 @@ const submit = (data) => {
   // server.
   exportImg(data);
 };
-
 function exportImg(data) {
+  //screenshot1 hoofdshot
+  floor.material.visible = false;
+  sky.material.visible = false;
+  camera.position.set(cameraPosities[0].x,cameraPosities[0].y,cameraPosities[0].z);  
   camera.aspect = 700 / 500;
   camera.updateProjectionMatrix();
   renderer.setSize(700, 500);
-  // let width_img = window.innerWidth;
-  // let height_img = window.innerHeight;
-
-  // pdfcanvas.width = width_img;
-  // pdfcanvas.height = height_img;
-
-  // let img0 = new Image();
   renderer.render(scene, camera);
   let imgURL = renderer.domElement.toDataURL("image/jpeg", 1.0);
-
-  // await loadImage(img0);
-
-  // let photoContext = pdfcanvas.getContext('2d');
-  // photoContext.drawImage(img0, 0, 0, width_img, height_img);
-  // imgURL = pdfcanvas.toDataURL('image/jpeg', 1.0);
-
-  // create a new FormData object, which will be used to send the data to the
-  // server.
+  // floor.visible = true;
+  // sky.visible = true;
   const formData = new FormData();
   formData.append("model", data);
   formData.append("configuration_id", configuration_id);
   formData.append("action", "brensj_upload_model");
   formData.append("image", imgURL);
 
+  //screenshot2
+  if (cameras.length > 0) {
+    floor.material.visible = true;
+    sky.material.visible = true;
+    for (let i = 1; i < cameras.length+1; i++) {
+      camera.position.set(cameraPosities[i].x,cameraPosities[i].y,cameraPosities[i].z);
+      camera.aspect = 690 / 351;
+      camera.updateProjectionMatrix();
+      renderer.setSize(690, 351);
+      renderer.render(scene, camera);
+      const imgURL1 = renderer.domElement.toDataURL("image/jpeg", 1.0);
+      formData.append("image"+i, imgURL1);
+    }
+  }  
+  
+  // formData.append("image", imgURL1);
   // build options.
   const options = {
     type: "POST",
@@ -307,7 +309,6 @@ function exportImg(data) {
 
   // perform request.
   jQuery.ajax(options);
-
   uiHide();
 }
 
@@ -682,7 +683,9 @@ const afwerkingsNiveau = () => {
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = bruinMeub;
     //toilet
-    meubilair["toilet_meub"].children[1].material = witMeub;
+    meubilair["toilet_meub"].children[0].material = witMeub;
+    meubilair["toilet_meub"].children[2].material = witMeub;
+    meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = m1;
   } else if (brensjParams.afwerking === "premium") {
@@ -729,7 +732,9 @@ const afwerkingsNiveau = () => {
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = granietZwart;
     //toilet
-    meubilair["toilet_meub"].children[1].material = witMeub;
+    meubilair["toilet_meub"].children[0].material = witMeub;
+    meubilair["toilet_meub"].children[2].material = witMeub;
+    meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = grijsMeub;
   } else if (brensjParams.afwerking === "high-end") {
@@ -774,7 +779,9 @@ const afwerkingsNiveau = () => {
     //wasmachine
     meubilair["wasmachine1_meub"].children[1].material = witMeub;
     //toilet
-    meubilair["toilet_meub"].children[1].material = grijsMeub;
+    meubilair["toilet_meub"].children[0].material = witMeub;
+    meubilair["toilet_meub"].children[2].material = grijsMeub;
+    meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = bruinMeub;
   }
@@ -1052,6 +1059,9 @@ const init = () => {
       case "toilet_Meubilair":
         meubilair["toilet_meub"] = child;
         break;
+      case "douche_Meubilair":
+        meubilair["douche_meub"] = child;
+        break;
       case "tafel1":
         meubilair["tafel1"] = child;
         bruinMeub = child.children[0].material;
@@ -1205,6 +1215,7 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
     (mModule.position.y + 20) * 0.1,
     (-mModule.position.z + 5) * 0.1
   );
+  createCamera(cameraPosities[nmbr + 1],mModule.position);
   addCameraButton(nmbr + 1);
   moduleGroup.add(mModule);
   // console.log(moduleGroup);
@@ -1627,6 +1638,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
         mdlgrp.add(meubilair["toilet_meub"].clone());
+        mdlgrp.add(meubilair["douche_meub"].clone());        
         if (brensjParams.work === "live-care-3") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-3-rv") {
@@ -1686,6 +1698,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
         mdlgrp.add(meubilair["toilet_meub"].clone());
+        mdlgrp.add(meubilair["douche_meub"].clone());   
         if (brensjParams.work === "live-care-4") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-4-rv") {
@@ -1837,6 +1850,7 @@ const setWork = () => {
 };
 const instantiateBrensj = () => {
   removeButtonElements();
+  removeCameras();
   if (moduleGroup.children.length > 0) {
     cleanup(moduleGroup);
     aantalModules(
@@ -1912,11 +1926,25 @@ initSky();
 const cameraPosities = {
   0: new THREE.Vector3(-3, 3, -8),
 };
+let cameras = [];
 //change camera position *************************************************************************
 let freeCam = false;
 let pos;
 let tar;
 let tar2;
+const createCamera = (camPos,tarPos) =>{
+  const cam = new THREE.PerspectiveCamera(fov, ratio, near, far);
+  cam.position.set(camPos.x,camPos.y,camPos.z);
+  cam.target = tarPos;
+  cameras.push(cam);
+  scene.add(cam);
+}
+const removeCameras = () => {
+  for (const cam of cameras) {
+    scene.remove(cam);
+  }
+  cameras = [];
+};
 const changeCameraPosition = () => {
   pos = new THREE.Vector3(
     camera.position.x,
@@ -1951,7 +1979,7 @@ const changeCameraPosition = () => {
   const tweenPos = new TWEEN.Tween(pos).to(tar, 1000);
   camTarget = tar2;
   tweenPos.onUpdate(function () {
-    camera.position.set(pos.x, pos.y, pos.z);
+  camera.position.set(pos.x, pos.y, pos.z);
   });
   tweenPos.start();
 };
@@ -2385,6 +2413,7 @@ const afwerkingPrijsBepaling = (dat) => {
 /***************************************************************************************************************************************************************************************
  * eventlisteners
  */
+console.log(scene)
 const modWerken = document.getElementById("modWerken");
 const modWonen = document.getElementById("modWonen");
 jQuery(document).ready(function ($) {
@@ -2410,6 +2439,7 @@ jQuery(document).ready(function ($) {
     brensjParams.work = current;
     brensjParams.modules = parseInt(current.substring(5, 6));
     setWork();
+    console.log(scene.children)
   });
   $(".modules-werken input").on("click", function () {
     var current = $(this).attr("id");

@@ -9,7 +9,7 @@ body {
 }
 #mainMenuBtn {
   height: 50px;
-  width: 50px;
+  width: 7vw;
   cursor: pointer;
   z-index: 10;
   background-size: cover;
