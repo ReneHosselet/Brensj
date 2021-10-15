@@ -7,6 +7,9 @@ html,
 body {
   overflow: hidden;
 }
+h3{
+  margin-top: 2vh;
+}
 #mainMenuBtn {
   height: 50px;
   width: 7vw;
@@ -116,7 +119,6 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-
 /* Hide the browser's default checkbox */
 .container input {
   position: relative;
@@ -125,7 +127,6 @@ body {
   height: 0;
   width: 0;
 }
-
 /* Create a custom checkbox */
 .checkmark {
   position: relative;
@@ -134,7 +135,6 @@ body {
   background-color: #eee;
   margin-left: 1vw;
 }
-
 /* On mouse-over, add a grey background color */
 .container:hover input ~ .checkmark {
   background-color: #ccc;
@@ -169,37 +169,53 @@ body {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
 /*********************************************BULLETIN POINTS***************************/
 #bulletinTitle {
-  margin-top: 2vh;
   margin-bottom: 1vh;
 }
 #bulletinList {
   margin-left: 2vw;
 }
+#extra-options-div{
+  margin-left: 2vw;
+}
+/************************************************DROPDOWN MENU*******************************************************/
+#extra-options{
+  width: 50%;
+}
+.SumoSelect{
+  width: 100%;
+}
 /************************************************STAP 5 OVERZICHT**********************************************************/
 #overzichtContainer {
   display: flex;
-  flex-direction: row;
-}
-#step5leftSide {
-  width: 25%;
-  display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  tab-size: 8;
+  list-style-type: none;
+}
+#overzichtContainer li{
+  display:flex;
+  justify-content: space-between;
+}
+#overzichtContainer li div{
+  padding: 5px 10px;
+}
+#overzichtContainer li:nth-child(odd){
+  background-color: #F5F5F5;
+}
+#overzichtContainer li:nth-child(even){
+  background-color: #ffffff;
+}
+.step5leftSide {
+  width: 25%;
   font-weight: bold;
 }
-#step5RightSide {
+.step5MidSide {
   width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
-#step5PriceSide {
+.step5RightSide {
   width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 
 /**

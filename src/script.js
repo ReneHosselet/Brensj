@@ -20,7 +20,9 @@ import {
 } from "@gltf-transform/extensions";
 import draco3d from "draco3d";
 import "@google/model-viewer";
+//extra imports
 
+//********************************************************************************** */
 let composer, renderPass, exporter;
 let afwerkingModule;
 
@@ -41,6 +43,7 @@ let data_gevel;
 let data_binnen;
 let data_vloer;
 let data_afwerking;
+let data_extra;
 function fetchJsonData() {
   if (brensj_posts !== undefined) {
     data_module = JSON.parse(brensj_posts.data_mod);
@@ -48,6 +51,9 @@ function fetchJsonData() {
     data_binnen = JSON.parse(brensj_posts.data_bnn);
     data_vloer = JSON.parse(brensj_posts.data_vlr);
     data_afwerking = JSON.parse(brensj_posts.data_afw);
+    data_extra = JSON.parse(brensj_posts.data_extra);
+    console.log(data_extra)
+    console.log(data_module)
   } else {
   }
 }
@@ -239,7 +245,6 @@ btnBestellen.addEventListener("click", (e) => {
   const brensj = scene.getObjectByName("modulegroup");
   toGLTF(brensj);
 });
-
 /**
  * Submit the form.
  * @param {ArrayBuffer} data The exported data.
@@ -254,10 +259,12 @@ function exportImg(data) {
   //screenshot1 hoofdshot
   floor.material.visible = false;
   sky.material.visible = false;
-  camera.position.set(cameraPosities[0].x,cameraPosities[0].y,cameraPosities[0].z);  
-  camera.aspect = 700 / 500;
+  camera.zoom = 2;
+  camera.position.set(cameraPosities[0].x,cameraPosities[0].y,cameraPosities[0].z);
+  camera.lookAt(fcsObj.position);
+  camera.aspect = 690 / 351;
   camera.updateProjectionMatrix();
-  renderer.setSize(700, 500);
+  renderer.setSize(690, 351);
   renderer.render(scene, camera);
   let imgURL = renderer.domElement.toDataURL("image/jpeg", 1.0);
   // floor.visible = true;
@@ -269,14 +276,19 @@ function exportImg(data) {
   formData.append("image", imgURL);
 
   //screenshot2
-  if (cameras.length > 0) {
+  if (cameras.length > 0) {    
+    camera.zoom = 1;
     floor.material.visible = true;
     sky.material.visible = true;
-    for (let i = 1; i < cameras.length+1; i++) {
+    for (let i = 0; i < cameras.length+1; i++) {
       camera.position.set(cameraPosities[i].x,cameraPosities[i].y,cameraPosities[i].z);
-      camera.aspect = 690 / 351;
+      if (i !== 0) {
+        camera.lookAt(new THREE.Vector3(0, 1.5, cameraPosities[i].z + 1.25));
+      }      
+      // camera.lookAt(new THREE.Vector3(cameraPosities[i].x-0.1,cameraPosities[i].y-0.1,cameraPosities[i].z-0.1));
+      camera.aspect = 700 / 500;
       camera.updateProjectionMatrix();
-      renderer.setSize(690, 351);
+      renderer.setSize(700, 500);
       renderer.render(scene, camera);
       const imgURL1 = renderer.domElement.toDataURL("image/jpeg", 1.0);
       formData.append("image"+i, imgURL1);
@@ -500,7 +512,7 @@ controls.enableDamping = true;
 controls.target.set(camTarget.x, camTarget.y, camTarget.z);
 
 controls.maxDistance = 20;
-controls.maxPolarAngle = Math.PI / 1.85;
+controls.maxPolarAngle = Math.PI / 1.95;
 
 /**
  * Renderer
@@ -623,7 +635,8 @@ const afwerkingsNiveau = () => {
     m2 = zwartMeub;
     m3 = quartz;
   }
-  loadFile();
+  // loadFile();
+  createBulletinP();
   //kast
   meubilair["kast1_meub"].children[0].material = m1;
   meubilair["kast1_meub"].children[1].material = m2;
@@ -811,57 +824,74 @@ const afwerkingsNiveau = () => {
 /***************************************************************file load************************************************** */
 //externe informatie document uitlezen
 const step4Container = document.getElementById("step4");
-const loadFile = () => {
-  THREE.Cache.enabled = true;
-  const fileLoader = new THREE.FileLoader();
-  const file = fileLoader.load(
-    path + "info/" + brensjParams.work + "-" + brensjParams.afwerking + ".txt",
-    function (data) {
-      createBulletinPoints(data);
-    }
-  );
-};
+// const loadFile = () => {
+//   THREE.Cache.enabled = true;
+//   const fileLoader = new THREE.FileLoader();
+//   const file = fileLoader.load(
+//     path + "info/" + brensjParams.work + "-" + brensjParams.afwerking + ".txt",
+//     function (data) {
+//       createBulletinPoints(data);
+//     }
+//   );
+// };
 //leest document en creert afwerking bulletin points
 let bulletinBoard;
 let bulletinTitle;
 let bulletinList;
-const createBulletinPoints = (filereader) => {
-  //remove previous bulletinpoints
+// const createBulletinPoints = (filereader) => {
+//   //remove previous bulletinpoints
+//   if (bulletinBoard !== undefined) {
+//     bulletinBoard.remove();
+//   }
+//   // //remove all children in list
+//   // if (bulletinList !== undefined) {
+//   //   if (bulletinList.hasChildNodes()) {
+//   //     const array = bulletinList.childNodes;
+//   //     for (let i = 0; i < bulletinList.childNodes.length; i++) {
+//   //       bulletinList.removeChild( bulletinList.childNodes[i])
+//   //     }
+//   //   }
+//   // }
+//   //line by line
+//   // var lines = filereader.result.split("\n");
+//   bulletinBoard = document.createElement("div");
+//   step4Container.appendChild(bulletinBoard);
+//   var lines = filereader.split("\n");
+//   for (var line = 0; line < lines.length; line++) {
+//     if (line === 0) {
+//       bulletinTitle = document.createElement("h3");
+//       bulletinTitle.id = "bulletinTitle";
+//       bulletinTitle.innerHTML = lines[line];
+//       bulletinBoard.appendChild(bulletinTitle);
+//       bulletinList = document.createElement("ul");
+//       bulletinList.id = "bulletinList";
+//       bulletinBoard.appendChild(bulletinList);
+//     } else {
+//       if (lines[line] !== "") {
+//         const li = document.createElement("li");
+//         li.innerHTML = lines[line];
+//         bulletinList.appendChild(li);
+//       }
+//     }
+//   }  
+// };
+const createBulletinP = () =>{
   if (bulletinBoard !== undefined) {
     bulletinBoard.remove();
   }
-  // //remove all children in list
-  // if (bulletinList !== undefined) {
-  //   if (bulletinList.hasChildNodes()) {
-  //     const array = bulletinList.childNodes;
-  //     for (let i = 0; i < bulletinList.childNodes.length; i++) {
-  //       bulletinList.removeChild( bulletinList.childNodes[i])
-  //     }
-  //   }
-  // }
-  //line by line
-  // var lines = filereader.result.split("\n");
   bulletinBoard = document.createElement("div");
   step4Container.appendChild(bulletinBoard);
-  var lines = filereader.split("\n");
-  for (var line = 0; line < lines.length; line++) {
-    if (line === 0) {
-      bulletinTitle = document.createElement("h3");
-      bulletinTitle.id = "bulletinTitle";
-      bulletinTitle.innerHTML = lines[line];
-      bulletinBoard.appendChild(bulletinTitle);
-      bulletinList = document.createElement("ul");
-      bulletinList.id = "bulletinList";
-      bulletinBoard.appendChild(bulletinList);
-    } else {
-      if (lines[line] !== "") {
-        const li = document.createElement("li");
-        li.innerHTML = lines[line];
-        bulletinList.appendChild(li);
-      }
-    }
+  if (afwerkingText !== undefined) {
+  bulletinTitle = document.createElement("h3");
+  bulletinTitle.id = "bulletinTitle";
+  bulletinTitle.innerHTML = brensjParams.afwerking;
+  bulletinBoard.appendChild(bulletinTitle);
+  bulletinList = document.createElement("div");
+  bulletinList.id = "bulletinList";  
+  bulletinList.innerHTML = afwerkingText;  
+  bulletinBoard.appendChild(bulletinList);
   }
-};
+}
 /*********************************************brensj params ********************************************************/
 //brensj parameters
 const brensjParams = {
@@ -1139,6 +1169,8 @@ const init = () => {
   brensjParams.vloerMateriaal = kerto;
   uiHide();
   afwerkingsNiveau();
+  createBulletinP();
+  // extraOptions();
 };
 //modules bouwen
 const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
@@ -1875,6 +1907,7 @@ const instantiateBrensj = () => {
   showProduct();
   calculatePrice();
   toggleDecoration();
+  extraOptions();
 };
 /**
  * sky
@@ -2111,61 +2144,142 @@ const showProduct = () => {
     rolstoel +
     ".jpg')";
 };
+//***********************************************************************EXTRA OPTIONS*************************************************************************************/
+const extraOptionsMenu = document.getElementById('extra-options');
+const extraOptionsDiv = document.getElementById('extra-options-div');
+
+const extraOptions = () =>{
+  // jQuery(document).ready(function () {
+  while (jQuery('#extra-options').has('option').length > 0) {
+    // jQuery(extraOptionsMenu )[0].sumo.remove([extraOptionsMenu.querySelectorAll('option')].findIndex(option => option.value == 'yourValue'))
+    // console.log(extraOptionsMenu.firstChild);
+    // extraOptionsMenu.removeChild(extraOptionsMenu.firstChild);
+    jQuery('#extra-options')[0].sumo.remove(0);
+  }
+// });
+    // if(extraOptionsMenu.childNodes.length > 0){
+    //   console.log("test");
+    //   for (let i = 0; i < extraOptionsMenu.childNodes.length; i++) {
+    //     jQuery('#extra-options')[0].sumo.remove(i);
+    //   }
+    // }
+  // }
+  var i =0
+  for (const element in data_extra) {    
+    const extras_title = data_extra[element].title;
+    const extra_meerprijs_per_module = data_extra[element].meerprijs_per_module;
+    for (const module in extra_meerprijs_per_module) {
+      const meerprijsModule = extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
+      let alreadyAdded = false;
+        for (const child of extra_meerprijs_per_module[module].gelinkte_module) {
+          if (brensjParams.moduleID === child.ID && !alreadyAdded) {
+            alreadyAdded = true;
+            extraOptionsMenu.sumo.add(extras_title,extras_title + "\t( + € " + meerprijsModule + " )",0,{'data-optie-id': data_extra[element].id});
+              extraOptionsMenu.children[0].setAttribute("data-optie-id",data_extra[element].id);
+          }
+        }
+    }
+    //extraOptionsMenu.sumo.add(data_extra[element].title,data_extra[element].title) + "\t( + € " + data_extra[element].prijs + " )",i, {'data-prijs': data_extra[element].prijs});
+    // const option = document.createElement("option");
+    // option.value = data_extra[element].naam;
+    // option.innerHTML = data_extra[element].naam //+ "\t( + € " + data_extra[element].prijs + " )";    
+    // extraOptionsMenu.appendChild(option);
+    i++;
+  }
+  extraOptionsEventListener();
+}
+function clearContents (){
+  extraOptionsDiv.innerHTML = "";
+  meerPrijsExtraOpties = 0;
+}
+let sumoMenu;
+const extraOptionsEventListener = () => {
+  sumoMenu.addEventListener('change', (e) => {
+    // const selectedList = document.querySelectorAll('.opt.selected')
+    const selectedList = jQuery('#extra-options').val();    
+    clearContents();
+     for (const element of selectedList) {
+       for (const datOpt in data_extra) {     
+         if (element === data_extra[datOpt].title) {
+          extraOptionsDiv.innerHTML += "\n<b>" + element + "</b>" + data_extra[datOpt].extra_info_optie;
+          const extra_meerprijs_per_module = data_extra[datOpt].meerprijs_per_module;
+          for (const module in extra_meerprijs_per_module) {            
+            const meerprijsModule = extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
+            let alreadyAdded = false;
+              for (const child of extra_meerprijs_per_module[module].gelinkte_module) {
+                if (brensjParams.moduleID === child.ID && !alreadyAdded) {
+                  alreadyAdded = true;
+                  meerPrijsExtraOpties += parseFloat(meerprijsModule);
+                }
+              }
+            }
+         }
+       }      
+     }
+     calculatePrice();
+   });
+}
 //***********************************************************************STAP 5 OVERZICHT**********************************************************************************/
 const step5Container = document.getElementById("overzichtContainer");
-const step5leftSide = document.getElementById("step5leftSide");
-const step5RightSide = document.getElementById("step5RightSide");
-const step5PriceSide = document.getElementById("step5PriceSide");
+// const step5leftSide = document.getElementById("step5leftSide");
+// const step5RightSide = document.getElementById("step5RightSide");
+// const step5PriceSide = document.getElementById("step5PriceSide");
 let overzichtSamenstelling;
-const Overzicht = () => {
-  while (step5leftSide.firstChild) {
-    step5leftSide.removeChild(step5leftSide.lastChild);
+const Overzicht = () => {  
+  while (step5Container.firstChild) {
+    step5Container.removeChild(step5Container.lastChild);
   }
-  while (step5RightSide.firstChild) {
-    step5RightSide.removeChild(step5RightSide.lastChild);
-  }
-  while (step5PriceSide.firstChild) {
-    step5PriceSide.removeChild(step5PriceSide.lastChild);
-  }
-
+  const list = document.createElement("ul");
   overzichtSamenstelling = {
     Module: brensjParams.work,
     Gevel: brensjParams.gevel,
     Binnen: brensjParams.binnenMateriaal.name,
     Vloer: brensjParams.vloerMateriaal.name,
     Afwerking: brensjParams.afwerking,
+    Extra: "vergaderen",
   };
-  for (const property in overzichtSamenstelling) {
-    const leftSpan = document.createElement("span");
-    leftSpan.className = "step5LeftSpan";
-    leftSpan.innerHTML = property;
-    const rightSpan = document.createElement("span");
-    rightSpan.className = "step5RightSpan";
-    rightSpan.innerHTML = overzichtSamenstelling[property];
-    const priceSpan = document.createElement("span");
-    priceSpan.className = "step5PriceSide";
-    priceSpan.innerHTML = meerprijsAfwerking;
+  for (const property in overzichtSamenstelling) {    
+    let meerprijs=0;
     switch (property) {
       case "Module":
-        priceSpan.innerHTML = "€" + prijsModule;
+        meerprijs = prijsModule;
         break;
       case "Gevel":
-        priceSpan.innerHTML = "€" + meerprijsGevel;
+        meerprijs = meerprijsGevel;
         break;
       case "Binnen":
-        priceSpan.innerHTML = "€" + meerprijsBinnen;
+        meerprijs = meerprijsBinnen;
         break;
       case "Vloer":
-        priceSpan.innerHTML = "€" + meerprijsVloer;
+        meerprijs = meerprijsVloer;
         break;
       case "Afwerking":
-        priceSpan.innerHTML = "€" + meerprijsAfwerking;
+        meerprijs = meerprijsAfwerking;
+        break;
+      case "Extra":
+        meerprijs = meerPrijsExtraOpties;
         break;
     }
-    step5leftSide.appendChild(leftSpan);
-    step5RightSide.appendChild(rightSpan);
-    step5PriceSide.appendChild(priceSpan);
+    meerprijs = formatter.format(meerprijs);
+    const row = document.createElement("li");
+    const leftDiv = document.createElement("div");
+    leftDiv.classList.add("step5leftSide");
+    leftDiv.innerHTML = property;
+    const midDiv = document.createElement("div");
+    midDiv.classList.add("step5MidSide");
+    midDiv.innerHTML = overzichtSamenstelling[property];
+    const rightDiv = document.createElement("div");
+    rightDiv.classList.add("step5RightSide");
+    rightDiv.innerHTML = meerprijs; 
+    row.appendChild(leftDiv);
+    row.appendChild(midDiv);
+    row.appendChild(rightDiv);
+    // row.innerHTML = property+": "+overzichtSamenstelling[property]+""+meerprijs+"\n"; 
+    list.appendChild(row);
+    // step5RightSide.appendChild(rightDiv);
+    // step5PriceSide.appendChild(priceSpan);
   }
+  step5Container.appendChild(list);
 };
 /*********************************************************************************************************************************************************************************
  * prijs bepalingen
@@ -2177,6 +2291,8 @@ let meerprijsGevel = 0;
 let meerprijsBinnen = 0;
 let meerprijsVloer = 0;
 let meerprijsAfwerking = 0;
+let meerPrijsExtraOpties = 0;
+let afwerkingText;
 //prijs visualisatie vars
 const afwerkingKeuzePrijs = document.querySelector(
   ".afwerkingsniveau-container .option-wrapper"
@@ -2212,7 +2328,8 @@ const calculatePrice = () => {
     parseFloat(meerprijsGevel) +
     parseFloat(meerprijsBinnen) +
     parseFloat(meerprijsVloer) +
-    parseFloat(meerprijsAfwerking);
+    parseFloat(meerprijsAfwerking) +
+    parseFloat(meerPrijsExtraOpties);
 
   // console.log(totaalPrijs);
   updatePrijs(totaalPrijs);
@@ -2224,9 +2341,17 @@ function updatePrijs(totaalPrijs) {
 //module prijsbepaling
 const modulePrijsBepaling = (dat) => {
   prijsModule = 0;
+  afwerkingText = null;
   for (const module in dat) {
     const module_name = dat[module].name;
     const basisPrijs = dat[module].basisprijs_module;
+    if (brensjParams.afwerking === "cosy") {
+      afwerkingText = dat[module].cosy_text;
+    }else if (brensjParams.afwerking === "premium"){
+      afwerkingText = dat[module].premium_text;
+    }else if(brensjParams.afwerking === "high-end"){
+      afwerkingText = dat[module].high_end_text;
+    }
     if (brensjParams.work === module_name.toLowerCase()) {
       prijsModule = basisPrijs;
     }
@@ -2432,6 +2557,7 @@ jQuery(document).ready(function ($) {
     }
     price.innerHTML = "0,00";
     setWork();
+    clearContents();
   });
 
   $(".modules-wonen input").on("click", function () {
@@ -2439,13 +2565,15 @@ jQuery(document).ready(function ($) {
     brensjParams.work = current;
     brensjParams.modules = parseInt(current.substring(5, 6));
     setWork();
-    console.log(scene.children)
+    clearContents();
+    // console.log(scene.children)
   });
   $(".modules-werken input").on("click", function () {
     var current = $(this).attr("id");
     brensjParams.work = current;
     brensjParams.modules = parseInt(current.substring(10, 11));
     setWork();
+    clearContents();
   });
   //buitenafwerking
   $(".container-dubbel input").on("click", function () {
@@ -2472,6 +2600,14 @@ jQuery(document).ready(function ($) {
   $("#hideButton").on("click", function () {
     uiHide();
   });
+  //dropdown
+    jQuery(document).ready(function () {
+    sumoMenu = jQuery('#extra-options').SumoSelect(
+      {
+        placeholder: "kies hier",
+      }
+    );
+    });
 });
 //button to go back to module options
 const mainMenu = document.querySelector(".module-type-selection-container");
