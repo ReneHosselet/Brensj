@@ -697,7 +697,7 @@ const afwerkingsNiveau = () => {
     meubilair["wasmachine1_meub"].children[1].material = bruinMeub;
     //toilet
     meubilair["toilet_meub"].children[0].material = witMeub;
-    meubilair["toilet_meub"].children[2].material = witMeub;
+    // meubilair["toilet_meub"].children[2].material = witMeub;
     meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = m1;
@@ -746,7 +746,7 @@ const afwerkingsNiveau = () => {
     meubilair["wasmachine1_meub"].children[1].material = granietZwart;
     //toilet
     meubilair["toilet_meub"].children[0].material = witMeub;
-    meubilair["toilet_meub"].children[2].material = witMeub;
+    // meubilair["toilet_meub"].children[2].material = witMeub;
     meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = grijsMeub;
@@ -793,7 +793,7 @@ const afwerkingsNiveau = () => {
     meubilair["wasmachine1_meub"].children[1].material = witMeub;
     //toilet
     meubilair["toilet_meub"].children[0].material = witMeub;
-    meubilair["toilet_meub"].children[2].material = grijsMeub;
+    // meubilair["toilet_meub"].children[2].material = grijsMeub;
     meubilair["toilet_meub"].children[1].material = zwartMeub;
     //wasbak
     meubilair["wasbak1_meub_nr"].children[2].material = bruinMeub;
@@ -956,6 +956,9 @@ const init = () => {
       case "frametussenscheiding1":
         frameOpvulling["fframetussenscheiding1"] = child;
         break;
+      case "frametussenscheiding1_2":
+        frameOpvulling["fframetussenscheiding1_2"] = child;
+        break;
       case "frametussenscheiding1_ceiling":
         frameOpvulling["fframetussenscheiding1_ceiling"] = child;
         break;
@@ -1086,10 +1089,19 @@ const init = () => {
       case "bed1_Meubilair_matras":
         meubilair["bed1_meub_matras"] = child;
         break;
+      case "bed2_Meubilair":
+        child.position.z += 2.5;
+        meubilair["bed2_meub"] = child;
+        break;
+      case "bed2_Meubilair_matras":
+        child.position.z += 2.5;
+        meubilair["bed2_meub_matras"] = child;
+        break;
       case "toilet_Meubilair":
         meubilair["toilet_meub"] = child;
         break;
       case "douche_Meubilair":
+        child.children[1].material = new THREE.MeshPhysicalMaterial({color:"rgb(70%, 90%, 100%)",transparent:true,opacity:.8,side:THREE.DoubleSide})
         meubilair["douche_meub"] = child;
         break;
       case "tafel1":
@@ -1169,7 +1181,6 @@ const init = () => {
   brensjParams.vloerMateriaal = kerto;
   uiHide();
   afwerkingsNiveau();
-  createBulletinP();
   // extraOptions();
 };
 //modules bouwen
@@ -1179,7 +1190,7 @@ const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
       if (i === 0) {
         buildModule(gA, bA, vA, fO, bO, "front", 0);
       } else if (i === aantal - 1) {
-        buildModule(gA, bA, vA, fO, bO, "back", i);
+        buildModule(gA, bA, vA, fO, bO, "back", i);   
       } else {
         buildModule(gA, bA, vA, fO, bO, "none", i);
       }
@@ -1190,7 +1201,11 @@ const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
   //
   moduleGroup.scale.set(0.1, 0.1, 0.1);
   moduleGroup.rotation.y = Math.PI;
-  changeMaterial(brensjParams.binnenMateriaal, brensjParams.vloerMateriaal);
+  changeMaterial(moduleGroup,brensjParams.binnenMateriaal, brensjParams.vloerMateriaal);
+  //laatste module van live brensj is wit
+  if(brensjParams.work.substring(0,4)==="live"){
+    changeMaterial(moduleGroup.children[moduleGroup.children.length-1],gyproc, brensjParams.vloerMateriaal);    
+  }
   scene.add(moduleGroup);
 };
 const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
@@ -1247,7 +1262,7 @@ const buildModule = (gmA, bmA, vmA, fmO, bmO, frm, nmbr) => {
     (mModule.position.y + 20) * 0.1,
     (-mModule.position.z + 5) * 0.1
   );
-  createCamera(cameraPosities[nmbr + 1],mModule.position);
+  // createCamera(cameraPosities[nmbr + 1],mModule.position);
   addCameraButton(nmbr + 1);
   moduleGroup.add(mModule);
   // console.log(moduleGroup);
@@ -1300,8 +1315,8 @@ const muurOpvullling = (fmO, bmO, mModule) => {
     }
   }
 };
-const changeMaterial = (binnen, vloer) => {
-  moduleGroup.traverse(function (child) {
+const changeMaterial = (group,binnen, vloer) => {
+  group.traverse(function (child) {
     if (child instanceof THREE.Object3D) {
       if (
         child.name === "binnengevel" ||
@@ -1318,6 +1333,9 @@ const changeMaterial = (binnen, vloer) => {
         child.material = vloer;
       } else if (child.name === "kot1") {
         child.children[0].material = binnen;
+      } else if (child.name === "frametussenscheiding1_2") {
+        child.children[0].material = brensjParams.binnenMateriaal;
+        child.children[1].material = binnen;
       }
     }
   });
@@ -1665,7 +1683,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         }
       } else if (mdlnmbr === brensjParams.modules - 1) {
         //achterste
-        mdlgrp.add(frameOpvulling["fframetussenscheiding1"].clone());
+        mdlgrp.add(frameOpvulling["fframetussenscheiding1_2"].clone());
         mdlgrp.add(frameOpvulling["fframetussenscheiding1_ceiling"].clone());
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
@@ -1718,6 +1736,8 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         const results = cutOutWalls(sidemodel, result, result1, mdlgrp, 1);
         result = results[0];
         result1 = results[1];
+        mdlgrp.add(meubilair["bed2_meub"]);
+        mdlgrp.add(meubilair["bed2_meub_matras"]);
         mdlgrp.add(meubilair["kast3_meub"].clone());
         mdlgrp.add(meubilair["kast4_meub_1"].clone());
         if (brensjParams.afwerking !== "cosy") {
@@ -1725,7 +1745,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         }
       } else if (mdlnmbr === brensjParams.modules - 1) {
         //achterste
-        mdlgrp.add(frameOpvulling["fframetussenscheiding1"].clone());
+        mdlgrp.add(frameOpvulling["fframetussenscheiding1_2"].clone());
         mdlgrp.add(frameOpvulling["fframetussenscheiding1_ceiling"].clone());
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
@@ -1906,6 +1926,7 @@ const instantiateBrensj = () => {
   updateAllMaterials();
   showProduct();
   calculatePrice();
+  createBulletinP();
   toggleDecoration();
   extraOptions();
 };
@@ -1965,13 +1986,13 @@ let freeCam = false;
 let pos;
 let tar;
 let tar2;
-const createCamera = (camPos,tarPos) =>{
-  const cam = new THREE.PerspectiveCamera(fov, ratio, near, far);
-  cam.position.set(camPos.x,camPos.y,camPos.z);
-  cam.target = tarPos;
-  cameras.push(cam);
-  scene.add(cam);
-}
+// const createCamera = (camPos,tarPos) =>{
+//   const cam = new THREE.PerspectiveCamera(fov, ratio, near, far);
+//   cam.position.set(camPos.x,camPos.y,camPos.z);
+//   cam.target = tarPos;
+//   cameras.push(cam);
+//   scene.add(cam);
+// }
 const removeCameras = () => {
   for (const cam of cameras) {
     scene.remove(cam);
@@ -2343,8 +2364,10 @@ const modulePrijsBepaling = (dat) => {
   prijsModule = 0;
   afwerkingText = null;
   for (const module in dat) {
+    if (dat[module].id === brensjParams.moduleID) {
     const module_name = dat[module].name;
     const basisPrijs = dat[module].basisprijs_module;
+    console.log(module);
     if (brensjParams.afwerking === "cosy") {
       afwerkingText = dat[module].cosy_text;
     }else if (brensjParams.afwerking === "premium"){
@@ -2355,6 +2378,7 @@ const modulePrijsBepaling = (dat) => {
     if (brensjParams.work === module_name.toLowerCase()) {
       prijsModule = basisPrijs;
     }
+  }
   }
 };
 //gevel prijs bepaling
