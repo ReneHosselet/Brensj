@@ -52,8 +52,8 @@ function fetchJsonData() {
     data_vloer = JSON.parse(brensj_posts.data_vlr);
     data_afwerking = JSON.parse(brensj_posts.data_afw);
     data_extra = JSON.parse(brensj_posts.data_extra);
-    console.log(data_extra)
-    console.log(data_module)
+    console.log(data_extra);
+    console.log(data_module);
   } else {
   }
 }
@@ -73,11 +73,11 @@ const checkCookies = (function () {
 
     // don't do anything if the cookies haven't changed.
     if (currentCookies === lastCookies) {
-      console.log("cookies remain unchanged");
+      // console.log("cookies remain unchanged");
       return;
     }
 
-    console.log("<< COOKIES HAVE CHANGED >>");
+    // console.log("<< COOKIES HAVE CHANGED >>");
 
     const cookie_value = get_cookie("configuration_id");
     const cookie_exists = cookie_value ? true : false;
@@ -95,12 +95,12 @@ const checkCookies = (function () {
     btnBestellen.classList.add(addClass);
     btnBestellen.classList.remove(removeClass);
 
-    console.log("<< CONFIG ID is: " + configuration_id + ">>");
+    // console.log("<< CONFIG ID is: " + configuration_id + ">>");
 
     // update cookies.
     lastCookies = currentCookies;
 
-    console.log("<< COOKIES ARE NOW: " + lastCookies + " >>");
+    // console.log("<< COOKIES ARE NOW: " + lastCookies + " >>");
   };
 })(); // execute immediately.
 
@@ -260,7 +260,11 @@ function exportImg(data) {
   floor.material.visible = false;
   sky.material.visible = false;
   camera.zoom = 2;
-  camera.position.set(cameraPosities[0].x,cameraPosities[0].y,cameraPosities[0].z);
+  camera.position.set(
+    cameraPosities[0].x,
+    cameraPosities[0].y,
+    cameraPosities[0].z
+  );
   camera.lookAt(fcsObj.position);
   camera.aspect = 690 / 351;
   camera.updateProjectionMatrix();
@@ -276,25 +280,29 @@ function exportImg(data) {
   formData.append("image", imgURL);
 
   //screenshot2
-  if (cameras.length > 0) {    
+  if (cameras.length > 0) {
     camera.zoom = 1;
     floor.material.visible = true;
     sky.material.visible = true;
-    for (let i = 0; i < cameras.length+1; i++) {
-      camera.position.set(cameraPosities[i].x,cameraPosities[i].y,cameraPosities[i].z);
+    for (let i = 0; i < cameras.length + 1; i++) {
+      camera.position.set(
+        cameraPosities[i].x,
+        cameraPosities[i].y,
+        cameraPosities[i].z
+      );
       if (i !== 0) {
         camera.lookAt(new THREE.Vector3(0, 1.5, cameraPosities[i].z + 1.25));
-      }      
+      }
       // camera.lookAt(new THREE.Vector3(cameraPosities[i].x-0.1,cameraPosities[i].y-0.1,cameraPosities[i].z-0.1));
       camera.aspect = 700 / 500;
       camera.updateProjectionMatrix();
       renderer.setSize(700, 500);
       renderer.render(scene, camera);
       const imgURL1 = renderer.domElement.toDataURL("image/jpeg", 1.0);
-      formData.append("image"+i, imgURL1);
+      formData.append("image" + i, imgURL1);
     }
-  }  
-  
+  }
+
   // formData.append("image", imgURL1);
   // build options.
   const options = {
@@ -873,25 +881,25 @@ let bulletinList;
 //         bulletinList.appendChild(li);
 //       }
 //     }
-//   }  
+//   }
 // };
-const createBulletinP = () =>{
+const createBulletinP = () => {
   if (bulletinBoard !== undefined) {
     bulletinBoard.remove();
   }
   bulletinBoard = document.createElement("div");
   step4Container.appendChild(bulletinBoard);
   if (afwerkingText !== undefined) {
-  bulletinTitle = document.createElement("h3");
-  bulletinTitle.id = "bulletinTitle";
-  bulletinTitle.innerHTML = brensjParams.afwerking;
-  bulletinBoard.appendChild(bulletinTitle);
-  bulletinList = document.createElement("div");
-  bulletinList.id = "bulletinList";  
-  bulletinList.innerHTML = afwerkingText;  
-  bulletinBoard.appendChild(bulletinList);
+    bulletinTitle = document.createElement("h3");
+    bulletinTitle.id = "bulletinTitle";
+    bulletinTitle.innerHTML = brensjParams.afwerking;
+    bulletinBoard.appendChild(bulletinTitle);
+    bulletinList = document.createElement("div");
+    bulletinList.id = "bulletinList";
+    bulletinList.innerHTML = afwerkingText;
+    bulletinBoard.appendChild(bulletinList);
   }
-}
+};
 /*********************************************brensj params ********************************************************/
 //brensj parameters
 const brensjParams = {
@@ -1101,7 +1109,12 @@ const init = () => {
         meubilair["toilet_meub"] = child;
         break;
       case "douche_Meubilair":
-        child.children[1].material = new THREE.MeshPhysicalMaterial({color:"rgb(70%, 90%, 100%)",transparent:true,opacity:.8,side:THREE.DoubleSide})
+        child.children[1].material = new THREE.MeshPhysicalMaterial({
+          color: "rgb(70%, 90%, 100%)",
+          transparent: true,
+          opacity: 0.8,
+          side: THREE.DoubleSide,
+        });
         meubilair["douche_meub"] = child;
         break;
       case "tafel1":
@@ -1190,7 +1203,7 @@ const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
       if (i === 0) {
         buildModule(gA, bA, vA, fO, bO, "front", 0);
       } else if (i === aantal - 1) {
-        buildModule(gA, bA, vA, fO, bO, "back", i);   
+        buildModule(gA, bA, vA, fO, bO, "back", i);
       } else {
         buildModule(gA, bA, vA, fO, bO, "none", i);
       }
@@ -1201,10 +1214,18 @@ const aantalModules = (aantal, gA, bA, vA, fO, bO) => {
   //
   moduleGroup.scale.set(0.1, 0.1, 0.1);
   moduleGroup.rotation.y = Math.PI;
-  changeMaterial(moduleGroup,brensjParams.binnenMateriaal, brensjParams.vloerMateriaal);
+  changeMaterial(
+    moduleGroup,
+    brensjParams.binnenMateriaal,
+    brensjParams.vloerMateriaal
+  );
   //laatste module van live brensj is wit
-  if(brensjParams.work.substring(0,4)==="live"){
-    changeMaterial(moduleGroup.children[moduleGroup.children.length-1],gyproc, brensjParams.vloerMateriaal);    
+  if (brensjParams.work.substring(0, 4) === "live") {
+    changeMaterial(
+      moduleGroup.children[moduleGroup.children.length - 1],
+      gyproc,
+      brensjParams.vloerMateriaal
+    );
   }
   scene.add(moduleGroup);
 };
@@ -1315,7 +1336,7 @@ const muurOpvullling = (fmO, bmO, mModule) => {
     }
   }
 };
-const changeMaterial = (group,binnen, vloer) => {
+const changeMaterial = (group, binnen, vloer) => {
   group.traverse(function (child) {
     if (child instanceof THREE.Object3D) {
       if (
@@ -1688,7 +1709,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
         mdlgrp.add(meubilair["toilet_meub"].clone());
-        mdlgrp.add(meubilair["douche_meub"].clone());        
+        mdlgrp.add(meubilair["douche_meub"].clone());
         if (brensjParams.work === "live-care-3") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-3-rv") {
@@ -1750,7 +1771,7 @@ const works = (mdlgrp, gvl, bnnn, mdlnmbr) => {
         mdlgrp.add(meubilair["kast8_meub"].clone());
         mdlgrp.add(meubilair["wasmachine1_meub"].clone());
         mdlgrp.add(meubilair["toilet_meub"].clone());
-        mdlgrp.add(meubilair["douche_meub"].clone());   
+        mdlgrp.add(meubilair["douche_meub"].clone());
         if (brensjParams.work === "live-care-4") {
           mdlgrp.add(meubilair["wasbak1_meub_nr"].clone());
         } else if (brensjParams.work === "live-care-4-rv") {
@@ -2033,7 +2054,7 @@ const changeCameraPosition = () => {
   const tweenPos = new TWEEN.Tween(pos).to(tar, 1000);
   camTarget = tar2;
   tweenPos.onUpdate(function () {
-  camera.position.set(pos.x, pos.y, pos.z);
+    camera.position.set(pos.x, pos.y, pos.z);
   });
   tweenPos.start();
 };
@@ -2166,87 +2187,100 @@ const showProduct = () => {
     ".jpg')";
 };
 //***********************************************************************EXTRA OPTIONS*************************************************************************************/
-const extraOptionsMenu = document.getElementById('extra-options');
-const extraOptionsDiv = document.getElementById('extra-options-div');
+const extraOptionsMenu = document.getElementById("extra-options");
+const extraOptionsDiv = document.getElementById("extra-options-div");
 
-const extraOptions = () =>{
+const extraOptions = () => {
   // jQuery(document).ready(function () {
-  while (jQuery('#extra-options').has('option').length > 0) {
+  while (jQuery("#extra-options").has("option").length > 0) {
     // jQuery(extraOptionsMenu )[0].sumo.remove([extraOptionsMenu.querySelectorAll('option')].findIndex(option => option.value == 'yourValue'))
     // console.log(extraOptionsMenu.firstChild);
     // extraOptionsMenu.removeChild(extraOptionsMenu.firstChild);
-    jQuery('#extra-options')[0].sumo.remove(0);
+    jQuery("#extra-options")[0].sumo.remove(0);
   }
-// });
-    // if(extraOptionsMenu.childNodes.length > 0){
-    //   console.log("test");
-    //   for (let i = 0; i < extraOptionsMenu.childNodes.length; i++) {
-    //     jQuery('#extra-options')[0].sumo.remove(i);
-    //   }
-    // }
+  // });
+  // if(extraOptionsMenu.childNodes.length > 0){
+  //   console.log("test");
+  //   for (let i = 0; i < extraOptionsMenu.childNodes.length; i++) {
+  //     jQuery('#extra-options')[0].sumo.remove(i);
+  //   }
   // }
-  var i =0
-  for (const element in data_extra) {    
+  // }
+  var i = 0;
+  for (const element in data_extra) {
     const extras_title = data_extra[element].title;
     const extra_meerprijs_per_module = data_extra[element].meerprijs_per_module;
     for (const module in extra_meerprijs_per_module) {
-      const meerprijsModule = extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
+      const meerprijsModule =
+        extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
       let alreadyAdded = false;
-        for (const child of extra_meerprijs_per_module[module].gelinkte_module) {
-          if (brensjParams.moduleID === child.ID && !alreadyAdded) {
-            alreadyAdded = true;
-            extraOptionsMenu.sumo.add(extras_title,extras_title + "\t( + € " + meerprijsModule + " )",0,{'data-optie-id': data_extra[element].id});
-              extraOptionsMenu.children[0].setAttribute("data-optie-id",data_extra[element].id);
-          }
+      for (const child of extra_meerprijs_per_module[module].gelinkte_module) {
+        if (brensjParams.moduleID === child.ID && !alreadyAdded) {
+          alreadyAdded = true;
+          extraOptionsMenu.sumo.add(
+            extras_title,
+            extras_title + "\t( + € " + meerprijsModule + " )",
+            0,
+            { "data-optie-id": data_extra[element].id }
+          );
+          extraOptionsMenu.children[0].setAttribute(
+            "data-optie-id",
+            data_extra[element].id
+          );
         }
+      }
     }
     //extraOptionsMenu.sumo.add(data_extra[element].title,data_extra[element].title) + "\t( + € " + data_extra[element].prijs + " )",i, {'data-prijs': data_extra[element].prijs});
     // const option = document.createElement("option");
     // option.value = data_extra[element].naam;
-    // option.innerHTML = data_extra[element].naam //+ "\t( + € " + data_extra[element].prijs + " )";    
+    // option.innerHTML = data_extra[element].naam //+ "\t( + € " + data_extra[element].prijs + " )";
     // extraOptionsMenu.appendChild(option);
     i++;
   }
   extraOptionsEventListener();
-}
-function clearContents (){
+};
+function clearContents() {
   extraOptionsDiv.innerHTML = "";
   meerPrijsExtraOpties = 0;
 }
 let sumoMenu;
 const extraOptionsEventListener = () => {
-  sumoMenu.addEventListener('change', (e) => {
+  sumoMenu.addEventListener("change", (e) => {
     // const selectedList = document.querySelectorAll('.opt.selected')
-    const selectedList = jQuery('#extra-options').val();    
+    const selectedList = jQuery("#extra-options").val();
     clearContents();
-     for (const element of selectedList) {
-       for (const datOpt in data_extra) {     
-         if (element === data_extra[datOpt].title) {
-          extraOptionsDiv.innerHTML += "\n<b>" + element + "</b>" + data_extra[datOpt].extra_info_optie;
-          const extra_meerprijs_per_module = data_extra[datOpt].meerprijs_per_module;
-          for (const module in extra_meerprijs_per_module) {            
-            const meerprijsModule = extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
+    for (const element of selectedList) {
+      for (const datOpt in data_extra) {
+        if (element === data_extra[datOpt].title) {
+          extraOptionsDiv.innerHTML +=
+            "\n<b>" + element + "</b>" + data_extra[datOpt].extra_info_optie;
+          const extra_meerprijs_per_module =
+            data_extra[datOpt].meerprijs_per_module;
+          for (const module in extra_meerprijs_per_module) {
+            const meerprijsModule =
+              extra_meerprijs_per_module[module].meerprijs_voor_deze_modules;
             let alreadyAdded = false;
-              for (const child of extra_meerprijs_per_module[module].gelinkte_module) {
-                if (brensjParams.moduleID === child.ID && !alreadyAdded) {
-                  alreadyAdded = true;
-                  meerPrijsExtraOpties += parseFloat(meerprijsModule);
-                }
+            for (const child of extra_meerprijs_per_module[module]
+              .gelinkte_module) {
+              if (brensjParams.moduleID === child.ID && !alreadyAdded) {
+                alreadyAdded = true;
+                meerPrijsExtraOpties += parseFloat(meerprijsModule);
               }
             }
-         }
-       }      
-     }
-     calculatePrice();
-   });
-}
+          }
+        }
+      }
+    }
+    calculatePrice();
+  });
+};
 //***********************************************************************STAP 5 OVERZICHT**********************************************************************************/
 const step5Container = document.getElementById("overzichtContainer");
 // const step5leftSide = document.getElementById("step5leftSide");
 // const step5RightSide = document.getElementById("step5RightSide");
 // const step5PriceSide = document.getElementById("step5PriceSide");
 let overzichtSamenstelling;
-const Overzicht = () => {  
+const Overzicht = () => {
   while (step5Container.firstChild) {
     step5Container.removeChild(step5Container.lastChild);
   }
@@ -2259,8 +2293,8 @@ const Overzicht = () => {
     Afwerking: brensjParams.afwerking,
     Extra: "vergaderen",
   };
-  for (const property in overzichtSamenstelling) {    
-    let meerprijs=0;
+  for (const property in overzichtSamenstelling) {
+    let meerprijs = 0;
     switch (property) {
       case "Module":
         meerprijs = prijsModule;
@@ -2291,11 +2325,11 @@ const Overzicht = () => {
     midDiv.innerHTML = overzichtSamenstelling[property];
     const rightDiv = document.createElement("div");
     rightDiv.classList.add("step5RightSide");
-    rightDiv.innerHTML = meerprijs; 
+    rightDiv.innerHTML = meerprijs;
     row.appendChild(leftDiv);
     row.appendChild(midDiv);
     row.appendChild(rightDiv);
-    // row.innerHTML = property+": "+overzichtSamenstelling[property]+""+meerprijs+"\n"; 
+    // row.innerHTML = property+": "+overzichtSamenstelling[property]+""+meerprijs+"\n";
     list.appendChild(row);
     // step5RightSide.appendChild(rightDiv);
     // step5PriceSide.appendChild(priceSpan);
@@ -2365,20 +2399,20 @@ const modulePrijsBepaling = (dat) => {
   afwerkingText = null;
   for (const module in dat) {
     if (dat[module].id === brensjParams.moduleID) {
-    const module_name = dat[module].name;
-    const basisPrijs = dat[module].basisprijs_module;
-    console.log(module);
-    if (brensjParams.afwerking === "cosy") {
-      afwerkingText = dat[module].cosy_text;
-    }else if (brensjParams.afwerking === "premium"){
-      afwerkingText = dat[module].premium_text;
-    }else if(brensjParams.afwerking === "high-end"){
-      afwerkingText = dat[module].high_end_text;
+      const module_name = dat[module].name;
+      const basisPrijs = dat[module].basisprijs_module;
+      console.log(module);
+      if (brensjParams.afwerking === "cosy") {
+        afwerkingText = dat[module].cosy_text;
+      } else if (brensjParams.afwerking === "premium") {
+        afwerkingText = dat[module].premium_text;
+      } else if (brensjParams.afwerking === "high-end") {
+        afwerkingText = dat[module].high_end_text;
+      }
+      if (brensjParams.work === module_name.toLowerCase()) {
+        prijsModule = basisPrijs;
+      }
     }
-    if (brensjParams.work === module_name.toLowerCase()) {
-      prijsModule = basisPrijs;
-    }
-  }
   }
 };
 //gevel prijs bepaling
@@ -2562,7 +2596,7 @@ const afwerkingPrijsBepaling = (dat) => {
 /***************************************************************************************************************************************************************************************
  * eventlisteners
  */
-console.log(scene)
+console.log(scene);
 const modWerken = document.getElementById("modWerken");
 const modWonen = document.getElementById("modWonen");
 jQuery(document).ready(function ($) {
@@ -2625,13 +2659,11 @@ jQuery(document).ready(function ($) {
     uiHide();
   });
   //dropdown
-    jQuery(document).ready(function () {
-    sumoMenu = jQuery('#extra-options').SumoSelect(
-      {
-        placeholder: "kies hier",
-      }
-    );
+  jQuery(document).ready(function () {
+    sumoMenu = jQuery("#extra-options").SumoSelect({
+      placeholder: "kies hier",
     });
+  });
 });
 //button to go back to module options
 const mainMenu = document.querySelector(".module-type-selection-container");
@@ -2639,7 +2671,7 @@ const mainMenuBtn = document.getElementById("mainMenuBtn");
 if (mainMenu !== null) {
   mainMenuBtn.addEventListener("click", () => {
     mainMenu.style.display = "";
-    updateStep(1); 
+    updateStep(1);
   });
 }
 //add camera buttons
