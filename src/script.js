@@ -323,7 +323,8 @@ function exportImg(data) {
       // console.log(response);
 
       // redirect user to pdf view.
-      window.location = `${window.location}offerte/?configuration_id=${configuration_id}`;
+      const redirect_to = `${window.location}offerte/?configuration_id=${configuration_id}`;
+      window.open(redirect_to, "_blank") || window.location.assign(redirect_to);
     },
   };
 
