@@ -52,8 +52,8 @@ function fetchJsonData() {
     data_vloer = JSON.parse(brensj_posts.data_vlr);
     data_afwerking = JSON.parse(brensj_posts.data_afw);
     data_extra = JSON.parse(brensj_posts.data_extra);
-    console.log(data_extra);
-    console.log(data_module);
+    // console.log(data_extra);
+    // console.log(data_module);
   } else {
   }
 }
@@ -331,8 +331,19 @@ function exportImg(data) {
   // perform request.
   jQuery.ajax(options);
   uiHide();
+  setTimeout(() => {
+    showEnvironment();
+  }, 1000);
 }
-
+function showEnvironment(){
+  floor.material.visible = true;
+  sky.material.visible = true;
+  camera.zoom = 1;
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.render(scene, camera);
+}
 function loadImage(img0) {
   return new Promise((resolve, reject) => {
     img0.onload = function () {
@@ -1906,19 +1917,27 @@ const setWork = () => {
     brensjParams.back = backGevel;
     brensjParams.moduleID = 1957;
   } else if (
-    brensjParams.work === "live-care-3" ||
+    brensjParams.work === "live-care-3"){
+      brensjParams.front = "fwindow1";
+    brensjParams.back = backGevel;
+    brensjParams.moduleID = 2225;
+    }else if (
+    brensjParams.work === "live-care-4"){
+      brensjParams.front = "fwindow1";
+    brensjParams.back = backGevel;
+    brensjParams.moduleID = 2226;
+    } else if (
     brensjParams.work === "live-care-3-rv"
   ) {
     brensjParams.front = "fwindow1";
     brensjParams.back = backGevel;
-    brensjParams.moduleID = 2225;
+    brensjParams.moduleID = 2251;
   } else if (
-    brensjParams.work === "live-care-4" ||
     brensjParams.work === "live-care-4-rv"
   ) {
     brensjParams.front = "fwindow1";
     brensjParams.back = backGevel;
-    brensjParams.moduleID = 2226;
+    brensjParams.moduleID = 2252;
   }
   instantiateBrensj();
 };
@@ -2402,7 +2421,6 @@ const modulePrijsBepaling = (dat) => {
     if (dat[module].id === brensjParams.moduleID) {
       const module_name = dat[module].name;
       const basisPrijs = dat[module].basisprijs_module;
-      console.log(module);
       if (brensjParams.afwerking === "cosy") {
         afwerkingText = dat[module].cosy_text;
       } else if (brensjParams.afwerking === "premium") {
