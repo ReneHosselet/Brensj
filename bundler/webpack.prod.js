@@ -4,15 +4,12 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webpack = require('webpack');
 
 module.exports = merge(
-    commonConfiguration,
-    {
+    commonConfiguration, {
         mode: 'production',
-        plugins:
-        [
+        plugins: [
             new CleanWebpackPlugin()
-        ]        
-    },
-    {
+        ]
+    }, {
         resolve: {
             fallback: {
                 "fs": false,
@@ -22,12 +19,12 @@ module.exports = merge(
                 stream: "stream-browserify",
                 zlib: "browserify-zlib"
             },
-    },
-    plugins: [
-        new webpack.ProvidePlugin({
-            process: 'process/browser',
-            Buffer: ['buffer', 'Buffer'],
-        }),
-    ]   
-}
+        },
+        plugins: [
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+                Buffer: ['buffer', 'Buffer'],
+            }),
+        ]
+    }
 )
